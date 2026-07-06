@@ -1,0 +1,4 @@
+dev/
+.venv/
+.vscode/
+.DS_Store

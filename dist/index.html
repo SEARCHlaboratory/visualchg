@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VisualCHG</title>
+
+  <!-- CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- PyScript (includes Pyodide) -->
+  <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
+  <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+  <script type="module" crossorigin src="/assets/index-exyysBoV.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-oromruJW.css">
+</head>
+
+<body>
+  <!-- PyScript Config for dependencies -->
+  <py-config>
+    packages = ["numpy", "constrainthg"]
+
+    [[fetch]]
+    files = ["/simulate_chg.py"]
+  </py-config>
+
+  <div id="app-container">
+    <!-- Floating Expand Buttons (Visible only when sidebars are collapsed) -->
+    <button id="btn-expand-primary" class="icon-btn expand-toggle left hidden" title="Expand Sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="13 17 18 12 13 7"></polyline>
+        <polyline points="6 17 11 12 6 7"></polyline>
+      </svg>
+    </button>
+    <button id="btn-expand-secondary" class="icon-btn expand-toggle right hidden" title="Expand Sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="11 17 6 12 11 7"></polyline>
+        <polyline points="18 17 13 12 18 7"></polyline>
+      </svg>
+    </button>
+
+    <!-- Primary Sidebar -->
+    <aside id="primary-sidebar" class="panel">
+      <div class="tabs">
+        <button id="btn-toggle-primary" class="icon-btn" title="Toggle Sidebar" style="margin-right: 4px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="11 17 6 12 11 7"></polyline>
+            <polyline points="18 17 13 12 18 7"></polyline>
+          </svg>
+        </button>
+        <button class="tab-btn active" data-target="tab-edit">Edit</button>
+        <button class="tab-btn" data-target="tab-properties">Properties</button>
+        <button class="tab-btn" data-target="tab-simulate">Simulate</button>
+      </div>
+
+      <div class="tab-content">
+        <!-- Edit Tab -->
+        <div id="tab-edit" class="tab-pane active">
+          <!-- Operations section removed -->
+
+          <section>
+            <h3>Frame</h3>
+            <div class="input-group">
+              <label for="select-frame">Select Frame</label>
+              <select id="select-frame"></select>
+            </div>
+            <button id="btn-add-frame" class="btn">Add Frame</button>
+            <button id="btn-rename-frame" class="btn">Rename Frame</button>
+            <button id="btn-clear-frame" class="btn">Clear Frame</button>
+            <button id="btn-remove-frame" class="btn danger">Remove Frame</button>
+          </section>
+
+          <section>
+            <h3>File</h3>
+            <button id="btn-upload" class="btn">Upload</button>
+            <input type="file" id="file-upload" accept=".chg,.json" style="display:none" />
+            <button id="btn-download" class="btn">Download</button>
+            <div class="input-group mt-2">
+              <label for="select-demo">Load Demo</label>
+              <select id="select-demo">
+                <option value="">Select a demo...</option>
+                <option value="/demos/demo_basic.chg">Demo Basic</option>
+              </select>
+            </div>
+          </section>
+        </div>
+
+        <!-- Properties Tab -->
+        <div id="tab-properties" class="tab-pane">
+          <div id="prop-empty-state">Nothing is selected</div>
+          <div id="prop-content" class="hidden">
+            <!-- Dynamic content injected by JS -->
+          </div>
+          <button id="btn-delete" class="btn danger hidden" style="margin-top: 16px;">Delete</button>
+        </div>
+
+        <!-- Simulate Tab -->
+        <div id="tab-simulate" class="tab-pane">
+          <div id="sim-empty-state">Select a node or path to simulate</div>
+          <div id="sim-content" class="hidden">
+            <div class="input-group">
+              <label>Minimum Index</label>
+              <input type="number" id="sim-min-index" value="0" />
+            </div>
+
+            <button id="btn-run-sim" class="btn primary-action">Simulate</button>
+
+            <div class="input-group mt-2">
+              <label class="checkbox-label">
+                <input type="checkbox" id="sim-show-steps" checked />
+                Show Solution Steps
+              </label>
+            </div>
+
+            <details class="mt-4">
+              <summary>Advanced</summary>
+              <div class="input-group mt-2">
+                <label>Log Level</label>
+                <input type="number" id="sim-log-level" value="0" />
+              </div>
+              <div class="input-group mt-2">
+                <label>Debug Nodes (press Enter)</label>
+                <input type="text" id="sim-debug-nodes" />
+                <div id="debug-nodes-tags" class="tag-container"></div>
+              </div>
+              <div class="input-group mt-2">
+                <label>Debug Edges (press Enter)</label>
+                <input type="text" id="sim-debug-edges" />
+                <div id="debug-edges-tags" class="tag-container"></div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="resizer" id="resizer-left"></div>
+
+    <!-- Main View Area -->
+    <main id="main-view">
+      <!-- Cytoscape Container -->
+      <div id="cy-container"></div>
+
+      <!-- Layout Controls (Bottom Right) -->
+      <div id="layout-controls-container" class="floating-controls-container">
+        <button id="btn-toggle-view" class="btn primary-action" style="margin-bottom:0">View</button>
+        <div id="layout-controls" class="hidden">
+          <button class="layout-btn" data-layout="grid">Grid</button>
+          <button class="layout-btn" data-layout="circle">Circle</button>
+          <button class="layout-btn" data-layout="concentric">Concentric</button>
+          <button class="layout-btn" data-layout="breadthfirst">Tree</button>
+          <button class="layout-btn" data-layout="cose">Cose</button>
+          <button class="layout-btn" data-layout="random">Random</button>
+        </div>
+      </div>
+
+      <!-- Terminal Panel (Overlays bottom of main view) -->
+      <div id="terminal-panel" class="panel">
+        <div class="terminal-tabs">
+          <button class="term-tab-btn active" data-target="term-output">Output</button>
+          <button class="term-tab-btn" data-target="term-python">Python</button>
+        </div>
+        <div class="term-content">
+          <div id="term-output" class="term-pane active">
+            <pre id="output-log"></pre>
+          </div>
+          <div id="term-python" class="term-pane">
+            <script type="py" terminal worker>
+              import sys
+              sys.path.append('./src')
+              import code
+              code.interact(banner="VisualCHG Python REPL (Worker)\nType 'help()' for more information.", exitmsg="")
+            </script>
+          </div>
+        </div>
+      </div>
+
+      <!-- Status Bar (Bottom) -->
+      <footer id="status-bar">
+        <div class="status-left">
+          <button id="btn-toggle-terminal" class="icon-btn" title="Toggle Terminal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+          </button>
+          <button id="btn-add-node" class="text-btn">Add Node</button>
+          <button id="btn-add-edge" class="text-btn">Add Edge</button>
+        </div>
+        <div class="status-right" id="status-text">
+          Ready
+        </div>
+      </footer>
+    </main>
+
+    <div class="resizer" id="resizer-right"></div>
+
+    <!-- Secondary Sidebar (Outline) -->
+    <aside id="secondary-sidebar" class="panel">
+      <div class="tabs">
+        <button class="tab-btn active" data-target="tab-nodes">Nodes</button>
+        <button class="tab-btn" data-target="tab-edges">Edges</button>
+        <button id="btn-toggle-outline" class="icon-btn" title="Toggle Sidebar" style="margin-left: auto;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="13 17 18 12 13 7"></polyline>
+            <polyline points="6 17 11 12 6 7"></polyline>
+          </svg>
+        </button>
+      </div>
+      <div class="tab-content">
+        <div id="tab-nodes" class="tab-pane active tree-view"></div>
+        <div id="tab-edges" class="tab-pane tree-view"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Python Bridge Script (invisible) -->
+  <script type="py" id="py-bridge">
+    import sys
+    sys.path.append('./src')
+    from js import window
+    from simulate_chg import simulate, get_path_info
+    
+    def run_simulation(file_data, output_node, frame_key, min_index, to_print, log_level, debug_nodes, debug_edges):
+        import json
+        from simulate_chg import make_hypergraph, get_inputs
+        
+        # Save temp file
+        with open('temp.chg', 'w') as f:
+            f.write(file_data)
+        
+        solve_kwargs = {
+            'to_print': to_print,
+            'min_index': min_index,
+            'debug_nodes': debug_nodes,
+            'debug_edges': debug_edges
+        }
+        if log_level > 0:
+            solve_kwargs['logging_level'] = log_level
+            
+        try:
+            t = simulate('temp.chg', output_node, frame_key, **solve_kwargs)
+            if t is not None:
+                path_info = get_path_info(t)
+                return json.dumps({
+                    'success': True,
+                    'msg': str(t),
+                    'value': t.value,
+                    'cost': t.cost,
+                    'tree': t.get_tree(),
+                    'target_node': output_node,
+                    **path_info
+                })
+            else:
+                return json.dumps({'success': False, 'error': 'No solution found'})
+        except Exception as e:
+            return json.dumps({'success': False, 'error': str(e)})
+
+    # Expose to JS
+    window.py_run_simulation = run_simulation
+  </script>
+
+  <!-- Application JS -->
+</body>
+
+</html>
