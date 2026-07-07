@@ -350,6 +350,34 @@ section {
   opacity: 0.8;
 }
 
+.autocomplete-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-hint {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  color: var(--text-color) !important;
+  opacity: 0.3 !important;
+  pointer-events: none;
+  background: transparent !important;
+  border-color: transparent !important;
+  z-index: 1;
+}
+
+.autocomplete-input {
+  position: relative;
+  background: transparent !important;
+  z-index: 2;
+}
+
+.invalid-input {
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
 .value-input-wrapper {
   display: flex;
   gap: 8px;
@@ -704,11 +732,42 @@ section {
   font-size: 0.85rem;
 }
 
-.status-left,
+.status-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.status-center {
+  flex: 0 1 auto;
+  text-align: center;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  padding: 0 16px;
+}
+
 .status-right {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 600px) {
+  .status-center {
+    display: none !important;
+  }
 }
 
 .icon-btn {

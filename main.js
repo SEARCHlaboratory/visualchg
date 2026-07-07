@@ -34,8 +34,6 @@ const getCyStyle = () => [
       'underlay-color': getCssVar('--arrow-color') || '#3b82f6',
       'underlay-padding': 4,
       'underlay-opacity': 0.8,
-      'border-width': 3,
-      'border-color': '#ffffff',
     }
   },
   {
@@ -57,8 +55,21 @@ const getCyStyle = () => [
       'underlay-color': getCssVar('--arrow-color') || '#aaaaaa',
       'underlay-padding': 6,
       'underlay-opacity': 0.8,
-      'border-width': 3,
       'border-color': getCssVar('--arrow-color') || '#aaaaaa'
+    }
+  },
+  {
+    selector: '.has-value',
+    style: {
+      'border-width': 4,
+      'border-color': getCssVar('--text-color') || '#ffffff'
+    }
+  },
+  {
+    selector: '.invalid-edge',
+    style: {
+      'border-width': 4,
+      'border-color': '#ef4444'
     }
   },
   {
@@ -157,6 +168,48 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Generate initial blank file
   createNewFile();
+
+  // Deselect inputs on Enter
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT' && (e.target.type === 'text' || e.target.type === 'number')) {
+      if (e.target.id === 'sim-debug-nodes' || e.target.id === 'sim-debug-edges') return;
+      e.target.blur();
+    }
+  });
+
+  // Cytoscape Tooltip
+  const tooltip = document.createElement('div');
+  tooltip.id = 'cy-tooltip';
+  tooltip.className = 'hidden';
+  tooltip.style.position = 'absolute';
+  tooltip.style.background = 'var(--bg-color)';
+  tooltip.style.border = '1px solid var(--border-color)';
+  tooltip.style.color = 'var(--text-color)';
+  tooltip.style.padding = '4px 8px';
+  tooltip.style.borderRadius = '4px';
+  tooltip.style.fontSize = '12px';
+  tooltip.style.pointerEvents = 'none';
+  tooltip.style.zIndex = '1000';
+  document.body.appendChild(tooltip);
+
+  cy.on('mouseover', 'node', (e) => {
+    const node = e.target;
+    if (node.hasClass('invalid-edge')) {
+      tooltip.textContent = 'Node not found in hypergraph.';
+      tooltip.classList.remove('hidden');
+    }
+  });
+
+  cy.on('mousemove', (e) => {
+    if (!tooltip.classList.contains('hidden') && e.originalEvent) {
+      tooltip.style.left = e.originalEvent.pageX + 10 + 'px';
+      tooltip.style.top = e.originalEvent.pageY + 10 + 'px';
+    }
+  });
+
+  cy.on('mouseout', 'node', (e) => {
+    tooltip.classList.add('hidden');
+  });
 });
 
 function setupTabs() {
@@ -402,7 +455,7 @@ function setupFileControls() {
         if (newName && newName.trim() !== '') {
           const cleanName = newName.trim();
           chgData.hypergraph.name = cleanName;
-          
+
           const newFileName = `${cleanName}.chg`;
           if (newFileName !== currentFileName) {
             loadedFiles[newFileName] = loadedFiles[currentFileName];
@@ -432,7 +485,7 @@ function createNewFile() {
   let num = 1;
   let fname = 'Untitled.chg';
   let hname = 'Untitled';
-  while(loadedFiles[fname]) {
+  while (loadedFiles[fname]) {
     num++;
     fname = `Untitled${num}.chg`;
     hname = `Untitled${num}`;
@@ -457,7 +510,7 @@ function updateFileSelect() {
       fileSelect.appendChild(opt);
     }
   });
-  
+
   fileSelect.onchange = (e) => {
     const selectedFile = e.target.value;
     if (loadedFiles[selectedFile] && currentFileName !== selectedFile) {
@@ -509,9 +562,9 @@ function loadCHG(data, filename) {
 async function populateDemos() {
   const selectDemo = document.getElementById('select-demo');
   if (!selectDemo) return;
-  
+
   const demoModules = import.meta.glob('/demos/*.chg', { query: '?raw', import: 'default' });
-  
+
   for (const path in demoModules) {
     try {
       const rawData = await demoModules[path]();
@@ -528,6 +581,13 @@ async function populateDemos() {
 }
 
 function renderGraph() {
+  const positions = {};
+  cy.nodes().forEach(n => {
+    positions[n.id()] = { ...n.position() };
+  });
+  const zoom = cy.zoom();
+  const pan = { ...cy.pan() };
+
   cy.elements().remove();
 
   const nodes = chgData.hypergraph.nodes || [];
@@ -535,34 +595,59 @@ function renderGraph() {
 
   const cyElements = [];
 
-  // Add Nodes
+  // Nodes Section
   nodes.forEach(n => {
+    let classes = '';
+    const val = chgData.frames && chgData.frames[currentFrame] && chgData.frames[currentFrame][n.label];
+    if (val !== undefined && val !== null && val !== '') {
+      classes += 'has-value ';
+    }
+
     cyElements.push({
       group: 'nodes',
-      data: { id: `N_${n.label}`, label: n.label, type: 'NODE' }
+      data: { id: `N_${n.label}`, label: n.label, type: 'NODE' },
+      classes: classes.trim()
     });
   });
 
+  const validNodeLabels = new Set(nodes.map(n => n.label));
+
   // Add Edges (as nodes in bipartite graph)
   edges.forEach(e => {
+    let edgeClasses = 'edge-node';
+    let isInvalid = false;
+
+    if (e.target && !validNodeLabels.has(e.target)) isInvalid = true;
+    if (e.source_nodes) {
+      Object.values(e.source_nodes).forEach(src => {
+        if (!validNodeLabels.has(src)) isInvalid = true;
+      });
+    }
+
+    if (isInvalid) {
+      edgeClasses += ' invalid-edge';
+    }
+
     cyElements.push({
       group: 'nodes',
       data: { id: `E_${e.label}`, label: e.label, type: 'EDGE' },
-      classes: 'edge-node',
+      classes: edgeClasses,
     });
 
     // Connect sources to edge
     if (e.source_nodes) {
       Object.values(e.source_nodes).forEach(src => {
-        cyElements.push({
-          group: 'edges',
-          data: { id: `L_${src}_${e.label}`, source: `N_${src}`, target: `E_${e.label}` }
-        });
+        if (validNodeLabels.has(src)) {
+          cyElements.push({
+            group: 'edges',
+            data: { id: `L_${src}_${e.label}`, source: `N_${src}`, target: `E_${e.label}` }
+          });
+        }
       });
     }
 
     // Connect edge to target
-    if (e.target) {
+    if (e.target && validNodeLabels.has(e.target)) {
       cyElements.push({
         group: 'edges',
         data: { id: `L_${e.label}_${e.target}`, source: `E_${e.label}`, target: `N_${e.target}` }
@@ -571,7 +656,21 @@ function renderGraph() {
   });
 
   cy.add(cyElements);
-  renderDefault();
+
+  let needsLayout = false;
+  cy.nodes().forEach(n => {
+    if (positions[n.id()]) {
+      n.position(positions[n.id()]);
+    } else {
+      needsLayout = true;
+    }
+  });
+
+  if (needsLayout || Object.keys(positions).length === 0) {
+    renderDefault();
+  } else {
+    cy.viewport({ zoom: zoom, pan: pan });
+  }
 }
 
 // Renders the default view for the graph
@@ -841,6 +940,14 @@ function updatePropertiesPanel() {
         const parsed = parseFloat(newVal);
         chgData.frames[currentFrame][node.label] = isNaN(parsed) ? [newVal] : [parsed];
       }
+
+      const cyNode = cy.getElementById(`N_${node.label}`);
+      if (newVal === '') {
+        cyNode.removeClass('has-value');
+      } else {
+        cyNode.addClass('has-value');
+      }
+
       updateStatus();
     };
 
@@ -859,12 +966,19 @@ function updatePropertiesPanel() {
     const edge = chgData.hypergraph.edges.find(e => e.label === VCHG_ELEMENT_SELECTED);
     if (!edge) return;
 
+    const validNodeLabels = new Set((chgData.hypergraph.nodes || []).map(n => n.label));
+
     let sourcesHtml = '';
     if (edge.source_nodes) {
       Object.entries(edge.source_nodes).forEach(([key, val]) => {
+        const isInvalid = val && !validNodeLabels.has(val);
+        const tooltipStr = isInvalid ? 'Node not found in hypergraph.' : 'Source Node';
         sourcesHtml += `
           <div class="source-grid" data-key="${key}">
-            <input type="text" class="src-val" value="${val}" title="Source Node" />
+            <div class="autocomplete-wrapper">
+              <input type="text" class="autocomplete-hint src-val-hint" disabled />
+              <input type="text" class="autocomplete-input src-val ${isInvalid ? 'invalid-input' : ''}" value="${val}" title="${tooltipStr}" />
+            </div>
             <input type="text" class="src-key" value="${key}" title="Key" />
             <button class="icon-btn danger btn-del-source" style="padding: 0; color: var(--danger-btn); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; height: 100%;" data-key="${key}">✕</button>
           </div>
@@ -883,7 +997,10 @@ function updatePropertiesPanel() {
       </div>
       <div class="input-group">
         <label>Target</label>
-        <input type="text" id="prop-edge-target" value="${edge.target || ''}" />
+        <div class="autocomplete-wrapper">
+          <input type="text" class="autocomplete-hint" id="prop-edge-target-hint" disabled />
+          <input type="text" class="autocomplete-input ${(edge.target && !validNodeLabels.has(edge.target)) ? 'invalid-input' : ''}" id="prop-edge-target" value="${edge.target || ''}" title="${(edge.target && !validNodeLabels.has(edge.target)) ? 'Node not found in hypergraph.' : ''}" />
+        </div>
       </div>
       <div class="input-group">
         <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -954,6 +1071,63 @@ function updatePropertiesPanel() {
         renderGraph();
         buildOutline();
       };
+    });
+
+    const targetInput = document.getElementById('prop-edge-target');
+    const targetHint = document.getElementById('prop-edge-target-hint');
+    if (targetInput && targetHint) attachAutocomplete(targetInput, targetHint, edge);
+
+    const validateEdgeLive = () => {
+      const validNodeLabels = new Set(chgData.hypergraph.nodes.map(n => n.label));
+      let isEdgeInvalid = false;
+
+      // target
+      const tInput = document.getElementById('prop-edge-target');
+      if (tInput) {
+        const val = tInput.value;
+        const isInvalid = val && !validNodeLabels.has(val);
+        if (isInvalid) {
+          tInput.classList.add('invalid-input');
+          tInput.setAttribute('title', 'Node not found in hypergraph.');
+          isEdgeInvalid = true;
+        } else {
+          tInput.classList.remove('invalid-input');
+          tInput.removeAttribute('title');
+        }
+      }
+
+      // sources
+      document.querySelectorAll('.src-val').forEach(sInput => {
+        const val = sInput.value;
+        const isInvalid = val && !validNodeLabels.has(val);
+        if (isInvalid) {
+          sInput.classList.add('invalid-input');
+          sInput.setAttribute('title', 'Node not found in hypergraph.');
+          isEdgeInvalid = true;
+        } else {
+          sInput.classList.remove('invalid-input');
+          sInput.removeAttribute('title');
+        }
+      });
+
+      const cyNode = cy.getElementById(`E_${edge.label}`);
+      if (cyNode) {
+        if (isEdgeInvalid) cyNode.addClass('invalid-edge');
+        else cyNode.removeClass('invalid-edge');
+      }
+    };
+
+    if (targetInput) {
+      targetInput.addEventListener('input', validateEdgeLive);
+    }
+
+    document.querySelectorAll('.source-grid').forEach(grid => {
+      const srcInput = grid.querySelector('.src-val');
+      const srcHint = grid.querySelector('.src-val-hint');
+      if (srcInput && srcHint) attachAutocomplete(srcInput, srcHint, edge);
+      if (srcInput) {
+        srcInput.addEventListener('input', validateEdgeLive);
+      }
     });
 
     document.querySelectorAll('.src-key').forEach(input => {
@@ -1245,4 +1419,36 @@ function promptModal(title, placeholder, callback, defaultValue = '') {
     if (e.key === 'Enter') confirm();
     if (e.key === 'Escape') cleanup();
   };
+}
+
+function attachAutocomplete(inputEl, hintEl, edgeContext = null) {
+  const updateHint = () => {
+    const val = inputEl.value;
+    if (!val) {
+      hintEl.value = '';
+      return;
+    }
+    const nodes = chgData.hypergraph.nodes.map(n => n.label);
+    const match = nodes.find(n => n.toLowerCase().startsWith(val.toLowerCase()));
+    if (match && match.toLowerCase() !== val.toLowerCase()) {
+      hintEl.value = val + match.substring(val.length);
+    } else {
+      hintEl.value = '';
+    }
+  };
+
+  inputEl.addEventListener('input', updateHint);
+  inputEl.addEventListener('focus', updateHint);
+  inputEl.addEventListener('blur', () => hintEl.value = '');
+
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      if (hintEl.value && hintEl.value.toLowerCase().startsWith(inputEl.value.toLowerCase())) {
+        e.preventDefault();
+        inputEl.value = hintEl.value;
+        hintEl.value = '';
+        inputEl.dispatchEvent(new Event('change'));
+      }
+    }
+  });
 }
