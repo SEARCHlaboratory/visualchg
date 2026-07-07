@@ -1,6 +1,6 @@
 {
   "hypergraph": {
-    "name": "null",
+    "name": "Basic Demo",
     "no_weights": false,
     "memory_mode": true,
     "nodes": [
@@ -80,7 +80,6 @@
     ]
   },
   "frames": {
-    "frame1": {},
     "default": {
       "A": [
         3
@@ -94,6 +93,7 @@
       "C": [
         10
       ]
-    }
+    },
+    "blank_frame": {}
   }
 }

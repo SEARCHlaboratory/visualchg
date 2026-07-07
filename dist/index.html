@@ -10,12 +10,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="/assets/VisualCHG%20Icon-B2L63bhf.ico" />
 
   <!-- PyScript (includes Pyodide) -->
   <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
   <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-  <script type="module" crossorigin src="/assets/index-exyysBoV.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-oromruJW.css">
+  <script type="module" crossorigin src="/assets/index-DpjopIRG.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-Cju4priI.css">
 </head>
 
 <body>
@@ -55,14 +56,27 @@
           </svg>
         </button>
         <button class="tab-btn active" data-target="tab-edit">Edit</button>
-        <button class="tab-btn" data-target="tab-properties">Properties</button>
+        <button class="tab-btn" data-target="tab-properties">Info</button>
         <button class="tab-btn" data-target="tab-simulate">Simulate</button>
       </div>
 
       <div class="tab-content">
         <!-- Edit Tab -->
         <div id="tab-edit" class="tab-pane active">
-          <!-- Operations section removed -->
+          <section>
+            <h3>File</h3>
+            <div class="input-group">
+              <label for="select-file">Select File</label>
+              <select id="select-file"></select>
+            </div>
+            <div class="button-grid mt-2">
+              <button id="btn-new-chg" class="btn">New</button>
+              <button id="btn-rename-file" class="btn">Rename</button>
+              <button id="btn-upload" class="btn">Upload</button>
+              <button id="btn-download" class="btn">Download</button>
+            </div>
+            <input type="file" id="file-upload" accept=".chg,.json" style="display:none" />
+          </section>
 
           <section>
             <h3>Frame</h3>
@@ -70,17 +84,16 @@
               <label for="select-frame">Select Frame</label>
               <select id="select-frame"></select>
             </div>
-            <button id="btn-add-frame" class="btn">Add Frame</button>
-            <button id="btn-rename-frame" class="btn">Rename Frame</button>
-            <button id="btn-clear-frame" class="btn">Clear Frame</button>
-            <button id="btn-remove-frame" class="btn danger">Remove Frame</button>
+            <div class="button-grid mt-2">
+              <button id="btn-add-frame" class="btn">Add</button>
+              <button id="btn-rename-frame" class="btn">Rename</button>
+              <button id="btn-clear-frame" class="btn">Reset</button>
+              <button id="btn-remove-frame" class="btn danger">Remove</button>
+            </div>
           </section>
 
           <section>
-            <h3>File</h3>
-            <button id="btn-upload" class="btn">Upload</button>
-            <input type="file" id="file-upload" accept=".chg,.json" style="display:none" />
-            <button id="btn-download" class="btn">Download</button>
+            <h3>Demos</h3>
             <div class="input-group mt-2">
               <label for="select-demo">Load Demo</label>
               <select id="select-demo">
@@ -138,6 +151,8 @@
           </div>
         </div>
       </div>
+      <!-- Primary Sidebar Bottom Logo -->
+      <img src="/assets/VisualCHG%20Logo-9343Nfwn.png" alt="VisualCHG Logo" class="sidebar-logo" />
     </aside>
 
     <div class="resizer" id="resizer-left"></div>
@@ -149,7 +164,9 @@
 
       <!-- Layout Controls (Bottom Right) -->
       <div id="layout-controls-container" class="floating-controls-container">
-        <button id="btn-toggle-view" class="btn primary-action" style="margin-bottom:0">View</button>
+        <button id="btn-clear-path" class="btn"
+          style="background-color: #f59e0b; color: white; display: none; margin-bottom: 0; width: auto;">Clear</button>
+        <button id="btn-toggle-view" class="btn primary-action" style="margin-bottom:0; width: auto;">View</button>
         <div id="layout-controls" class="hidden">
           <button class="layout-btn" data-layout="grid">Grid</button>
           <button class="layout-btn" data-layout="circle">Circle</button>
@@ -163,27 +180,23 @@
       <!-- Terminal Panel (Overlays bottom of main view) -->
       <div id="terminal-panel" class="panel">
         <div class="terminal-tabs">
-          <button class="term-tab-btn active" data-target="term-output">Output</button>
-          <button class="term-tab-btn" data-target="term-python">Python</button>
+          <button class="term-tab-btn active" data-target="term-output-py">Output</button>
+          <button class="term-tab-btn" data-target="term-log">Log</button>
         </div>
         <div class="term-content">
-          <div id="term-output" class="term-pane active">
-            <pre id="output-log"></pre>
+          <div id="term-output-py" class="term-pane active">
+            <pre id="python-output"
+              style="white-space: pre-wrap; word-wrap: break-word; height: 100%; margin: 0; padding: 16px; overflow-y: auto; color: var(--text-color);"></pre>
           </div>
-          <div id="term-python" class="term-pane">
-            <script type="py" terminal worker>
-              import sys
-              sys.path.append('./src')
-              import code
-              code.interact(banner="VisualCHG Python REPL (Worker)\nType 'help()' for more information.", exitmsg="")
-            </script>
+          <div id="term-log" class="term-pane">
+            <pre id="output-log"></pre>
           </div>
         </div>
       </div>
 
       <!-- Status Bar (Bottom) -->
       <footer id="status-bar">
-        <div class="status-left">
+        <div class="status-left" style="flex: 1; justify-content: flex-start;">
           <button id="btn-toggle-terminal" class="icon-btn" title="Toggle Terminal">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
@@ -191,10 +204,11 @@
               <line x1="12" y1="19" x2="20" y2="19"></line>
             </svg>
           </button>
-          <button id="btn-add-node" class="text-btn">Add Node</button>
-          <button id="btn-add-edge" class="text-btn">Add Edge</button>
         </div>
-        <div class="status-right" id="status-text">
+        <div class="status-center" id="status-filename" style="flex: 1; text-align: center; font-weight: 500;">
+          New Hypergraph
+        </div>
+        <div class="status-right" id="status-text" style="flex: 1; justify-content: flex-end; text-align: right;">
           Ready
         </div>
       </footer>
@@ -216,8 +230,32 @@
         </button>
       </div>
       <div class="tab-content">
-        <div id="tab-nodes" class="tab-pane active tree-view"></div>
-        <div id="tab-edges" class="tab-pane tree-view"></div>
+        <div id="tab-nodes" class="tab-pane active">
+          <div class="inline-add-row">
+            <input type="text" id="input-add-node" placeholder="Add new node" />
+            <button id="btn-inline-add-node" class="inline-add-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div id="nodes-tree" class="tree-view"></div>
+        </div>
+        <div id="tab-edges" class="tab-pane">
+          <div class="inline-add-row">
+            <input type="text" id="input-add-edge" placeholder="Add new edge" />
+            <button id="btn-inline-add-edge" class="inline-add-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+          <div id="edges-tree" class="tree-view"></div>
+        </div>
       </div>
     </aside>
   </div>
@@ -226,8 +264,21 @@
   <script type="py" id="py-bridge">
     import sys
     sys.path.append('./src')
-    from js import window
+    from js import window, document
     from simulate_chg import simulate, get_path_info
+
+    class JSOutput:
+        def write(self, s):
+            el = document.getElementById("python-output")
+            if el:
+                el.innerText += s
+                el.scrollTop = el.scrollHeight
+        def flush(self):
+            pass
+
+    sys.stdout = JSOutput()
+    # Let stderr also go to the output or keep it default.
+    sys.stderr = JSOutput()
     
     def run_simulation(file_data, output_node, frame_key, min_index, to_print, log_level, debug_nodes, debug_edges):
         import json
@@ -240,14 +291,22 @@
         solve_kwargs = {
             'to_print': to_print,
             'min_index': min_index,
-            'debug_nodes': debug_nodes,
-            'debug_edges': debug_edges
+            'debug_nodes': debug_nodes.to_py() if hasattr(debug_nodes, 'to_py') else debug_nodes,
+            'debug_edges': debug_edges.to_py() if hasattr(debug_edges, 'to_py') else debug_edges
         }
         if log_level > 0:
             solve_kwargs['logging_level'] = log_level
             
         try:
             t = simulate('temp.chg', output_node, frame_key, **solve_kwargs)
+            
+            import os
+            log_contents = ""
+            if os.path.exists("constrainthg.log"):
+                with open("constrainthg.log", "r") as f_log:
+                    log_contents = f_log.read()
+                os.remove("constrainthg.log")
+
             if t is not None:
                 path_info = get_path_info(t)
                 return json.dumps({
@@ -257,6 +316,7 @@
                     'cost': t.cost,
                     'tree': t.get_tree(),
                     'target_node': output_node,
+                    'log': log_contents,
                     **path_info
                 })
             else:
@@ -269,6 +329,18 @@
   </script>
 
   <!-- Application JS -->
+
+  <!-- Reusable Custom Modal -->
+  <div id="app-modal">
+    <div class="modal-content">
+      <h3 id="modal-title">Prompt</h3>
+      <input type="text" id="modal-input" placeholder="" />
+      <div class="modal-actions">
+        <button id="modal-btn-cancel" class="btn">Cancel</button>
+        <button id="modal-btn-confirm" class="btn primary-action">Confirm</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
