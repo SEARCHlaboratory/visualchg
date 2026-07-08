@@ -24,10 +24,6 @@
         "is_constant": false
       },
       {
-        "label": "delta theta",
-        "is_constant": false
-      },
-      {
         "label": "sine theta",
         "is_constant": false
       },
@@ -42,10 +38,6 @@
       },
       {
         "label": "omega",
-        "is_constant": false
-      },
-      {
-        "label": "delta omega",
         "is_constant": false
       },
       {
