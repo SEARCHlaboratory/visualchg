@@ -62,7 +62,13 @@
         <!-- Edit Tab -->
         <div id="tab-edit" class="tab-pane active">
           <section>
-            <h3>File</h3>
+            <h3>File <svg class="info-icon" data-info="The loaded hypergraph definition (.chg format)."
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg></h3>
             <div class="input-group">
               <label for="select-file">Select File</label>
               <select id="select-file"></select>
@@ -77,7 +83,14 @@
           </section>
 
           <section>
-            <h3>Frame</h3>
+            <h3>Frame <svg class="info-icon"
+                data-info="A set of specific initial values assigned to variables (nodes) in the hypergraph."
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg></h3>
             <div class="input-group">
               <label for="select-frame">Select Frame</label>
               <select id="select-frame"></select>
@@ -91,7 +104,13 @@
           </section>
 
           <section>
-            <h3>Demos</h3>
+            <h3>Demos <svg class="info-icon" data-info="Pre-configured hypergraph examples to demonstrate capabilities."
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg></h3>
             <div class="input-group mt-2">
               <label for="select-demo">Load Demo</label>
               <select id="select-demo">
@@ -112,40 +131,98 @@
           <section id="sim-section" class="hidden"
             style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px;">
             <div id="sim-content">
-              <button id="btn-run-sim" class="btn primary-action">Simulate</button>
+              <div class="input-with-info">
+                <button id="btn-run-sim" class="btn primary-action">Simulate</button>
+                <svg class="info-icon" data-info="Executes the hypergraph solver to resolve the target node."
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+              </div>
 
               <details class="mt-4">
                 <summary>Advanced</summary>
                 <div class="input-group mt-2">
-                  <label class="checkbox-label">
-                    <input type="checkbox" id="sim-show-steps" checked />
-                    Show Solution Steps
-                  </label>
+                  <div class="input-with-info">
+                    <label class="checkbox-label" style="margin: 0; flex: 1;">
+                      <input type="checkbox" id="sim-show-steps" checked />
+                      Show Solution Steps
+                    </label>
+                    <svg class="info-icon"
+                      data-info="If enabled, logs the step-by-step resolution of nodes via the solver's TNode tree."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
                 </div>
 
                 <div class="input-group inline-row mt-2">
-                  <label>Minimum Cycle Index</label>
-                  <input type="number" id="sim-min-index" value="0" />
+                  <label>Min Cycle Index</label>
+                  <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
+                    <input type="number" id="sim-min-index" value="0" />
+                    <svg class="info-icon"
+                      data-info="The minimum allowed cycle index for resolving cyclic dependencies in the hypergraph."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
                 </div>
 
                 <div class="input-group inline-row mt-2">
                   <label>Log Level</label>
-                  <select id="sim-log-level">
-                    <option value="40">Errors</option>
-                    <option value="30">Warnings</option>
-                    <option value="20" selected>Information</option>
-                    <option value="11">Verbose</option>
-                    <option value="10">Debugging</option>
-                  </select>
+                  <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
+                    <select id="sim-log-level">
+                      <option value="40">Errors</option>
+                      <option value="30">Warnings</option>
+                      <option value="20" selected>Information</option>
+                      <option value="11">Verbose</option>
+                      <option value="10">Debugging</option>
+                    </select>
+                    <svg class="info-icon" data-info="Controls the verbosity of the constrainthg solver output."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
                 </div>
                 <div class="input-group mt-2">
                   <label>Debug Nodes (press Enter)</label>
-                  <input type="text" id="sim-debug-nodes" />
+                  <div class="input-with-info">
+                    <input type="text" id="sim-debug-nodes" />
+                    <svg class="info-icon"
+                      data-info="Specific nodes to uniquely trace and verbosely log during resolution."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
                   <div id="debug-nodes-tags" class="tag-container"></div>
                 </div>
                 <div class="input-group mt-2">
                   <label>Debug Edges (press Enter)</label>
-                  <input type="text" id="sim-debug-edges" />
+                  <div class="input-with-info">
+                    <input type="text" id="sim-debug-edges" />
+                    <svg class="info-icon"
+                      data-info="Specific directed hyperedges to uniquely trace and verbosely log during resolution."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
                   <div id="debug-edges-tags" class="tag-container"></div>
                 </div>
               </details>

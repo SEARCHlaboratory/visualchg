@@ -33,7 +33,7 @@
     /* Blue */
     --edge-color: #10b981;
     /* Green */
-    --arrow-color: #dddddd;
+    --arrow-color: #bbbbbb;
 
     --border-color: rgba(255, 255, 255, 0.1);
     --hover-bg: rgba(255, 255, 255, 0.05);
@@ -396,6 +396,98 @@ section {
   background-color: rgba(34, 197, 94, 0.15) !important;
   border-color: #22c55e !important;
   color: #22c55e !important;
+}
+
+.input-with-info {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.input-with-info> :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.spinner-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.spinner-controls {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spinner-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-color);
+  opacity: 0.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner-btn:hover:not(.disabled) {
+  opacity: 1;
+}
+
+.spinner-btn.disabled {
+  opacity: 0.1;
+  cursor: default;
+}
+
+.spinner-btn svg {
+  width: 10px;
+  height: 10px;
+}
+
+.info-icon {
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+  color: var(--text-color);
+  opacity: 0.4;
+  cursor: pointer;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+  z-index: 10;
+  display: inline-block;
+}
+
+.info-icon:hover {
+  opacity: 0.8;
+}
+
+.info-tooltip {
+  position: fixed;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: normal;
+  z-index: 9999;
+  max-width: 250px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.info-tooltip.show {
+  opacity: 1;
 }
 
 .input-group input[type="text"],

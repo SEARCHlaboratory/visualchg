@@ -12,6 +12,8 @@ let VCHG_KIND_SELECTED = null; // 'NODE', 'EDGE', 'PATH', or null
 const rootStyle = getComputedStyle(document.documentElement);
 const getCssVar = (name) => rootStyle.getPropertyValue(name).trim();
 
+const getInfoIcon = (msg) => `<svg class="info-icon" data-info="${msg}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
+
 const getCyStyle = () => [
   {
     selector: 'node',
@@ -191,6 +193,41 @@ document.addEventListener('DOMContentLoaded', () => {
   tooltip.style.pointerEvents = 'none';
   tooltip.style.zIndex = '1000';
   document.body.appendChild(tooltip);
+
+  // Global Tooltip for Info Icons
+  const infoTooltip = document.createElement('div');
+  infoTooltip.className = 'info-tooltip';
+  document.body.appendChild(infoTooltip);
+
+  document.addEventListener('click', (e) => {
+    const icon = e.target.closest('.info-icon');
+    if (icon) {
+      e.preventDefault();
+      e.stopPropagation();
+      const msg = icon.dataset.info;
+
+      if (infoTooltip.classList.contains('show') && infoTooltip.textContent === msg) {
+        infoTooltip.classList.remove('show');
+        return;
+      }
+
+      infoTooltip.textContent = msg;
+
+      const rect = icon.getBoundingClientRect();
+      let left = rect.left + rect.width + 10;
+      let top = rect.top - 10;
+
+      infoTooltip.classList.add('show');
+      const tooltipRect = infoTooltip.getBoundingClientRect();
+      if (left + tooltipRect.width > window.innerWidth) {
+        left = rect.left - tooltipRect.width - 10;
+      }
+      infoTooltip.style.left = `${left}px`;
+      infoTooltip.style.top = `${top}px`;
+    } else {
+      infoTooltip.classList.remove('show');
+    }
+  });
 
   cy.on('mouseover', 'node', (e) => {
     const node = e.target;
@@ -422,7 +459,7 @@ function setupFileControls() {
       if (confirm(`Are you sure you want to remove frame '${currentFrame}'? This will permanently delete it from the active graph.`)) {
         delete chgData.frames[currentFrame];
         currentFrame = Object.keys(chgData.frames)[0];
-        
+
         const frameSelect = document.getElementById('select-frame');
         if (frameSelect) {
           Array.from(frameSelect.options).forEach(opt => {
@@ -572,10 +609,13 @@ function loadCHG(data, filename) {
   chgData = loadedFiles[currentFileName];
   updateFileSelect();
 
-  currentFrame = 'default';
-  updateStatus();
+  if (!chgData.frames || Object.keys(chgData.frames).length === 0) {
+    chgData.frames = { default: {} };
+  }
 
-  if (!chgData.frames) chgData.frames = { default: {} };
+  // Set to first available frame
+  currentFrame = Object.keys(chgData.frames)[0];
+  updateStatus();
 
   // Populate Frame Select
   const frameSelect = document.getElementById('select-frame');
@@ -928,29 +968,69 @@ function updatePropertiesPanel() {
     const node = chgData.hypergraph.nodes.find(n => n.label === VCHG_ELEMENT_SELECTED);
     if (!node) return;
 
-    const val = (chgData.frames[currentFrame] && chgData.frames[currentFrame][node.label]) ?
-      chgData.frames[currentFrame][node.label][0] : '';
+    let val = '';
+    let valList = null;
+    let indexHtml = '';
+    let inputBoxHtml = '';
+    
+    if (chgData.frames[currentFrame] && chgData.frames[currentFrame][node.label]) {
+      valList = chgData.frames[currentFrame][node.label];
+      val = valList[valList.length - 1]; // Show last value
+      if (valList.length > 1) {
+        indexHtml = `<div id="prop-node-index-text" style="text-align: right; font-size: 0.8rem; font-style: italic; margin-top: 4px; margin-right: 22px; opacity: 0.7;">Index: ${valList.length}</div>`;
+        const spinnerControls = `
+          <div class="spinner-controls">
+            <button id="btn-index-up" class="spinner-btn disabled">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+            </button>
+            <button id="btn-index-down" class="spinner-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+        `;
+        inputBoxHtml = `
+          <div class="spinner-wrapper">
+            <input type="text" id="prop-node-val" value="${val}" style="padding-right: 20px;" />
+            ${spinnerControls}
+          </div>
+        `;
+      } else {
+        inputBoxHtml = `<input type="text" id="prop-node-val" value="${val}" />`;
+      }
+    } else {
+      inputBoxHtml = `<input type="text" id="prop-node-val" value="${val}" />`;
+    }
+
+    const valueTooltip = "The current state or resolved value of the node. Warning: Editing a node with multiple history values will overwrite the entire list with a single new value.";
 
     html = `
       <div class="input-group">
         <label>Label</label>
-        <input type="text" id="prop-node-label" value="${node.label}" />
+        <div class="input-with-info">
+          <input type="text" id="prop-node-label" value="${node.label}" />
+          ${getInfoIcon("The unique identifier of the node.")}
+        </div>
       </div>
       <div class="input-group">
         <label>Value <i>(frame: ${currentFrame})</i></label>
-        <div class="value-input-wrapper">
-          <input type="text" id="prop-node-val" value="${val}" />
+        <div class="value-input-wrapper input-with-info">
+          ${inputBoxHtml}
           <button id="btn-apply-sim" class="icon-btn hidden" title="Apply simulated value" style="color: #22c55e; flex-shrink: 0;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </button>
+          ${getInfoIcon(valueTooltip)}
         </div>
+        ${indexHtml}
       </div>
       <div class="input-group mt-2">
-        <label class="checkbox-label">
-          <input type="checkbox" id="prop-node-const" ${node.is_constant ? 'checked' : ''} /> Constant
-        </label>
+        <div class="input-with-info">
+          <label class="checkbox-label" style="margin: 0; flex: 1;">
+            <input type="checkbox" id="prop-node-const" ${node.is_constant ? 'checked' : ''} /> Constant
+          </label>
+          ${getInfoIcon("If true, the node's value is fixed and will not be overwritten by the solver.")}
+        </div>
       </div>
     `;
     content.innerHTML = html;
@@ -975,6 +1055,53 @@ function updatePropertiesPanel() {
     const valInput = document.getElementById('prop-node-val');
     const applyBtn = document.getElementById('btn-apply-sim');
 
+    // Spinner logic for multiple values
+    if (valList && valList.length > 1) {
+      let currentIndex = valList.length; // 1-based index
+      const btnUp = document.getElementById('btn-index-up');
+      const btnDown = document.getElementById('btn-index-down');
+      const indexText = document.getElementById('prop-node-index-text');
+
+      const updateSpinner = () => {
+        valInput.value = valList[currentIndex - 1]; // 0-based
+        indexText.textContent = `Index: ${currentIndex}`;
+        
+        if (currentIndex >= valList.length) {
+          btnUp.classList.add('disabled');
+        } else {
+          btnUp.classList.remove('disabled');
+        }
+
+        if (currentIndex <= 1) {
+          btnDown.classList.add('disabled');
+        } else {
+          btnDown.classList.remove('disabled');
+        }
+        
+        // Remove simulation state visual logic if navigating history
+        valInput.classList.remove('sim-success');
+        applyBtn.classList.add('hidden');
+      };
+
+      if (btnUp) {
+        btnUp.onclick = () => {
+          if (currentIndex < valList.length) {
+            currentIndex++;
+            updateSpinner();
+          }
+        };
+      }
+
+      if (btnDown) {
+        btnDown.onclick = () => {
+          if (currentIndex > 1) {
+            currentIndex--;
+            updateSpinner();
+          }
+        };
+      }
+    }
+
     valInput.oninput = () => {
       // Clear simulation visual state if manually edited
       valInput.classList.remove('sim-success');
@@ -992,6 +1119,15 @@ function updatePropertiesPanel() {
         const parsed = parseFloat(newVal);
         chgData.frames[currentFrame][node.label] = isNaN(parsed) ? [newVal] : [parsed];
       }
+      
+      // Hide spinner and index text since the history is now reduced to 1
+      const spinnerControls = document.querySelector('.spinner-controls');
+      if (spinnerControls) spinnerControls.classList.add('hidden');
+      
+      const indexTextNode = document.getElementById('prop-node-index-text');
+      if (indexTextNode) indexTextNode.classList.add('hidden');
+      
+      valInput.style.paddingRight = '';
 
       const cyNode = cy.getElementById(`N_${node.label}`);
       if (newVal === '') {
@@ -1041,23 +1177,35 @@ function updatePropertiesPanel() {
     html = `
       <div class="input-group">
         <label>Label</label>
-        <input type="text" id="prop-edge-label" value="${edge.label}" />
+        <div class="input-with-info">
+          <input type="text" id="prop-edge-label" value="${edge.label}" />
+          ${getInfoIcon("The unique identifier of the directed hyperedge.")}
+        </div>
       </div>
       <div class="input-group">
         <label>Weight</label>
-        <input type="number" id="prop-edge-weight" value="${edge.weight || 0}" />
+        <div class="input-with-info">
+          <input type="number" id="prop-edge-weight" value="${edge.weight || 0}" />
+          ${getInfoIcon("The traversal cost associated with evaluating this edge.")}
+        </div>
       </div>
       <div class="input-group">
         <label>Target</label>
-        <div class="autocomplete-wrapper">
-          <input type="text" class="autocomplete-hint" id="prop-edge-target-hint" disabled />
-          <input type="text" class="autocomplete-input ${(edge.target && !validNodeLabels.has(edge.target)) ? 'invalid-input' : ''}" id="prop-edge-target" value="${edge.target || ''}" title="${(edge.target && !validNodeLabels.has(edge.target)) ? 'Node not found in hypergraph.' : ''}" />
+        <div class="input-with-info">
+          <div class="autocomplete-wrapper">
+            <input type="text" class="autocomplete-hint" id="prop-edge-target-hint" disabled />
+            <input type="text" class="autocomplete-input ${(edge.target && !validNodeLabels.has(edge.target)) ? 'invalid-input' : ''}" id="prop-edge-target" value="${edge.target || ''}" title="${(edge.target && !validNodeLabels.has(edge.target)) ? 'Node not found in hypergraph.' : ''}" />
+          </div>
+          ${getInfoIcon("The node whose value is resolved by this edge's relationship.")}
         </div>
       </div>
       <div class="input-group">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <label>Sources</label>
-          <button id="btn-add-source" class="icon-btn text-btn" style="font-size:1.2rem; margin:0">+</button>
+          <div style="display: flex; align-items: center;">
+            <button id="btn-add-source" class="icon-btn text-btn" style="font-size:1.2rem; margin:0">+</button>
+            ${getInfoIcon("The required input nodes for this edge.")}
+          </div>
         </div>
         <div class="source-grid" style="font-weight:600; font-size:0.8rem">
           <div>Label</div><div>Key</div><div></div>
@@ -1066,7 +1214,10 @@ function updatePropertiesPanel() {
       </div>
       <div class="input-group">
         <label>Rule</label>
-        <textarea class="code-block" id="prop-edge-rule">${edge.rel || ''}</textarea>
+        <div class="input-with-info" style="align-items: flex-start;">
+          <textarea class="code-block" id="prop-edge-rule">${edge.rel || ''}</textarea>
+          ${getInfoIcon("The Python function (rel) defining how the target is calculated from the source nodes.")}
+        </div>
       </div>
     `;
     content.innerHTML = html;
@@ -1207,7 +1358,7 @@ function setupEntityOperations() {
 
   const inputSearchNodeHint = document.getElementById('input-search-node-hint');
   const inputSearchEdgeHint = document.getElementById('input-search-edge-hint');
-  
+
   if (inputAddNode && inputSearchNodeHint) attachAutocomplete(inputAddNode, inputSearchNodeHint, null, 'NODE');
   if (inputAddEdge && inputSearchEdgeHint) attachAutocomplete(inputAddEdge, inputSearchEdgeHint, null, 'EDGE');
 
@@ -1216,7 +1367,7 @@ function setupEntityOperations() {
     const label = inputAddNode.value.trim();
     if (!label) return;
     if (!chgData.hypergraph.nodes) chgData.hypergraph.nodes = [];
-    
+
     if (chgData.hypergraph.nodes.find(n => n.label === label)) {
       inputAddNode.value = '';
       if (inputSearchNodeHint) inputSearchNodeHint.value = '';
@@ -1247,7 +1398,7 @@ function setupEntityOperations() {
     const label = inputAddEdge.value.trim();
     if (!label) return;
     if (!chgData.hypergraph.edges) chgData.hypergraph.edges = [];
-    
+
     if (chgData.hypergraph.edges.find(e => e.label === label)) {
       inputAddEdge.value = '';
       if (inputSearchEdgeHint) inputSearchEdgeHint.value = '';
