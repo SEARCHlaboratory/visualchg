@@ -62,7 +62,8 @@
         <!-- Edit Tab -->
         <div id="tab-edit" class="tab-pane active">
           <section>
-            <h3>File <svg class="info-icon" data-info="The loaded hypergraph definition (.chg format)."
+            <h3>File <svg class="info-icon"
+                data-info="The file describing the hypergraph (with a .chg extension). You can create a new file by adding nodes and edges (at right) or upload a preexisting file."
                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -84,7 +85,7 @@
 
           <section>
             <h3>Frame <svg class="info-icon"
-                data-info="A set of specific initial values assigned to variables (nodes) in the hypergraph."
+                data-info="A collection of values for the graph. You can add additional frames to represent different scenarios or input runs. Useful if you want to compare simulations of the same variable."
                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -104,7 +105,8 @@
           </section>
 
           <section>
-            <h3>Demos <svg class="info-icon" data-info="Pre-configured hypergraph examples to demonstrate capabilities."
+            <h3>Demos <svg class="info-icon"
+                data-info="Loads a prebuild model to show how the software works. These and more examples are available online at https://constrainthg.readthedocs.io."
                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
@@ -133,7 +135,8 @@
             <div id="sim-content">
               <div class="input-with-info">
                 <button id="btn-run-sim" class="btn primary-action">Simulate</button>
-                <svg class="info-icon" data-info="Executes the hypergraph solver to resolve the target node."
+                <svg class="info-icon"
+                  data-info="Uses the ConstraintHg solver to see if there is a way to use the values you've entered (inputs) to solve for the value of the current node."
                   viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
@@ -151,7 +154,7 @@
                       Show Solution Steps
                     </label>
                     <svg class="info-icon"
-                      data-info="If enabled, logs the step-by-step resolution of nodes via the solver's TNode tree."
+                      data-info="Prints the full path to the console. Should be turned off for long paths."
                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                       stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -166,7 +169,7 @@
                   <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
                     <input type="number" id="sim-min-index" value="0" />
                     <svg class="info-icon"
-                      data-info="The minimum allowed cycle index for resolving cyclic dependencies in the hypergraph."
+                      data-info="Sets how many times the solver should repeatedly solve for the node. This should only be set for dynamic systems where the target node is part of a cycle."
                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                       stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -200,7 +203,7 @@
                   <div class="input-with-info">
                     <input type="text" id="sim-debug-nodes" />
                     <svg class="info-icon"
-                      data-info="Specific nodes to uniquely trace and verbosely log during resolution."
+                      data-info="Set nodes for which additional information will be shown on the log output."
                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                       stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -215,7 +218,7 @@
                   <div class="input-with-info">
                     <input type="text" id="sim-debug-edges" />
                     <svg class="info-icon"
-                      data-info="Specific directed hyperedges to uniquely trace and verbosely log during resolution."
+                      data-info="Set edges for which additional information will be shown on the log output."
                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                       stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -231,7 +234,40 @@
         </div>
       </div>
       <!-- Primary Sidebar Bottom Logo -->
-      <img src="/media/VisualCHG Logo.png" alt="VisualCHG Logo" class="sidebar-logo" />
+      <div class="sidebar-bottom-brand">
+        <img src="/media/VisualCHG Logo.png" alt="VisualCHG Logo" class="sidebar-logo" />
+        <div class="sidebar-links">
+          <a href="https://github.com/SEARCHlaboratory/visualchg" target="_blank" title="GitHub Repository">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+              </path>
+            </svg>
+          </a>
+          <a href="https://constrainthg.readthedocs.io" target="_blank" title="Documentation and Further Reading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </a>
+          <a href="https://github.com/jmorris335/ConstraintHg/discussions" target="_blank" title="Discussions">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </a>
+          <a href="https://www.searchlaboratory.org" target="_blank" title="Lab Home Page">
+            <div
+              style="width: 18px; height: 18px; background-color: currentColor; -webkit-mask: url('/media/icons/SEARCH Lab Icon.png') no-repeat center / contain; mask: url('/media/icons/SEARCH Lab Icon.png') no-repeat center / contain;">
+            </div>
+          </a>
+        </div>
+      </div>
     </aside>
 
     <div class="resizer" id="resizer-left"></div>

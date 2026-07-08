@@ -12,7 +12,7 @@ let VCHG_KIND_SELECTED = null; // 'NODE', 'EDGE', 'PATH', or null
 window.undoStacks = {};
 window.redoStacks = {};
 
-window.updateHistoryUI = function() {
+window.updateHistoryUI = function () {
   const btnUndo = document.getElementById('btn-undo');
   const btnRedo = document.getElementById('btn-redo');
   if (!btnUndo || !btnRedo) return;
@@ -27,7 +27,7 @@ window.updateHistoryUI = function() {
   else btnRedo.classList.add('disabled');
 }
 
-window.pushHistory = function() {
+window.pushHistory = function () {
   if (!currentFileName || !chgData) return;
   if (!window.undoStacks[currentFileName]) window.undoStacks[currentFileName] = [];
   if (!window.redoStacks[currentFileName]) window.redoStacks[currentFileName] = [];
@@ -41,12 +41,12 @@ window.pushHistory = function() {
   window.updateHistoryUI();
 }
 
-window.undoHistory = function() {
+window.undoHistory = function () {
   if (!currentFileName || !window.undoStacks[currentFileName] || window.undoStacks[currentFileName].length === 0) return;
   const stack = window.undoStacks[currentFileName];
   if (!window.redoStacks[currentFileName]) window.redoStacks[currentFileName] = [];
   window.redoStacks[currentFileName].push(JSON.stringify(chgData));
-  
+
   const prevState = stack.pop();
   chgData = JSON.parse(prevState);
   loadedFiles[currentFileName] = chgData;
@@ -58,12 +58,12 @@ window.undoHistory = function() {
   updateStatus();
 }
 
-window.redoHistory = function() {
+window.redoHistory = function () {
   if (!currentFileName || !window.redoStacks[currentFileName] || window.redoStacks[currentFileName].length === 0) return;
   const stack = window.redoStacks[currentFileName];
   if (!window.undoStacks[currentFileName]) window.undoStacks[currentFileName] = [];
   window.undoStacks[currentFileName].push(JSON.stringify(chgData));
-  
+
   const nextState = stack.pop();
   chgData = JSON.parse(nextState);
   loadedFiles[currentFileName] = chgData;
@@ -620,10 +620,10 @@ function setupFileControls() {
           const newFileName = `${cleanName}.chg`;
           if (newFileName !== currentFileName) {
             window.pushHistory(); // push the rename to history
-            
+
             loadedFiles[newFileName] = loadedFiles[currentFileName];
             delete loadedFiles[currentFileName];
-            
+
             if (window.undoStacks[currentFileName]) {
               window.undoStacks[newFileName] = window.undoStacks[currentFileName];
               delete window.undoStacks[currentFileName];
@@ -632,7 +632,7 @@ function setupFileControls() {
               window.redoStacks[newFileName] = window.redoStacks[currentFileName];
               delete window.redoStacks[currentFileName];
             }
-            
+
             currentFileName = newFileName;
             updateFileSelect();
           }
@@ -1068,7 +1068,7 @@ function updatePropertiesPanel() {
     let valList = null;
     let indexHtml = '';
     let inputBoxHtml = '';
-    
+
     if (chgData.frames[currentFrame] && chgData.frames[currentFrame][node.label]) {
       valList = chgData.frames[currentFrame][node.label];
       val = valList[valList.length - 1]; // Show last value
@@ -1097,14 +1097,14 @@ function updatePropertiesPanel() {
       inputBoxHtml = `<input type="text" id="prop-node-val" value="${val}" />`;
     }
 
-    const valueTooltip = "The current state or resolved value of the node. Warning: Editing a node with multiple history values will overwrite the entire list with a single new value.";
+    const valueTooltip = "The current state of the node. You can set this yourself if the value is known (an input) or simulate it using the button below (an output). For dynamic systems, a node can have multiple values as the system evolves through multiple systems, which you can progress through using the arrows. Warning: Editing a node with multiple history values will overwrite the entire list with a single new value.";
 
     html = `
       <div class="input-group">
         <label>Label</label>
         <div class="input-with-info">
           <input type="text" id="prop-node-label" value="${node.label}" />
-          ${getInfoIcon("The unique identifier of the node.")}
+          ${getInfoIcon("A unique identifier (name) for the node.")}
         </div>
       </div>
       <div class="input-group">
@@ -1162,7 +1162,7 @@ function updatePropertiesPanel() {
       const updateSpinner = () => {
         valInput.value = valList[currentIndex - 1]; // 0-based
         indexText.textContent = `Index: ${currentIndex}`;
-        
+
         if (currentIndex >= valList.length) {
           btnUp.classList.add('disabled');
         } else {
@@ -1174,7 +1174,7 @@ function updatePropertiesPanel() {
         } else {
           btnDown.classList.remove('disabled');
         }
-        
+
         // Remove simulation state visual logic if navigating history
         valInput.classList.remove('sim-success');
         applyBtn.classList.add('hidden');
@@ -1217,14 +1217,14 @@ function updatePropertiesPanel() {
         const parsed = parseFloat(newVal);
         chgData.frames[currentFrame][node.label] = isNaN(parsed) ? [newVal] : [parsed];
       }
-      
+
       // Hide spinner and index text since the history is now reduced to 1
       const spinnerControls = document.querySelector('.spinner-controls');
       if (spinnerControls) spinnerControls.classList.add('hidden');
-      
+
       const indexTextNode = document.getElementById('prop-node-index-text');
       if (indexTextNode) indexTextNode.classList.add('hidden');
-      
+
       valInput.style.paddingRight = '';
 
       const cyNode = cy.getElementById(`N_${node.label}`);
@@ -1278,7 +1278,7 @@ function updatePropertiesPanel() {
         <label>Label</label>
         <div class="input-with-info">
           <input type="text" id="prop-edge-label" value="${edge.label}" />
-          ${getInfoIcon("The unique identifier of the directed hyperedge.")}
+          ${getInfoIcon("A unique identifier (name) for the edge.")}
         </div>
       </div>
       <div class="input-group">
@@ -1315,7 +1315,7 @@ function updatePropertiesPanel() {
         <label>Rule</label>
         <div class="input-with-info" style="align-items: flex-start;">
           <textarea class="code-block" id="prop-edge-rule">${edge.rel || ''}</textarea>
-          ${getInfoIcon("The Python function (rel) defining how the target is calculated from the source nodes.")}
+          ${getInfoIcon("The relationship that defines how the target node is calculated. This must be written as a Python method following all Python syntax starting with def. The name of the method does not matter, but its parameters should be the keys of the source nodes above.")}
         </div>
       </div>
     `;
