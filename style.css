@@ -882,8 +882,14 @@ section {
   transition: all 0.2s;
 }
 
-.icon-btn:hover {
+.icon-btn:hover:not(.disabled) {
   background: var(--hover-bg);
+}
+
+.icon-btn.disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
 }
 
 .icon-btn.flash {

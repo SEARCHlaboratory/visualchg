@@ -8,6 +8,73 @@ let currentFrame = 'default';
 let VCHG_ELEMENT_SELECTED = null;
 let VCHG_KIND_SELECTED = null; // 'NODE', 'EDGE', 'PATH', or null
 
+// History state
+window.undoStacks = {};
+window.redoStacks = {};
+
+window.updateHistoryUI = function() {
+  const btnUndo = document.getElementById('btn-undo');
+  const btnRedo = document.getElementById('btn-redo');
+  if (!btnUndo || !btnRedo) return;
+
+  const canUndo = currentFileName && window.undoStacks[currentFileName] && window.undoStacks[currentFileName].length > 0;
+  const canRedo = currentFileName && window.redoStacks[currentFileName] && window.redoStacks[currentFileName].length > 0;
+
+  if (canUndo) btnUndo.classList.remove('disabled');
+  else btnUndo.classList.add('disabled');
+
+  if (canRedo) btnRedo.classList.remove('disabled');
+  else btnRedo.classList.add('disabled');
+}
+
+window.pushHistory = function() {
+  if (!currentFileName || !chgData) return;
+  if (!window.undoStacks[currentFileName]) window.undoStacks[currentFileName] = [];
+  if (!window.redoStacks[currentFileName]) window.redoStacks[currentFileName] = [];
+
+  window.undoStacks[currentFileName].push(JSON.stringify(chgData));
+  if (window.undoStacks[currentFileName].length > 50) {
+    window.undoStacks[currentFileName].shift();
+  }
+
+  window.redoStacks[currentFileName] = [];
+  window.updateHistoryUI();
+}
+
+window.undoHistory = function() {
+  if (!currentFileName || !window.undoStacks[currentFileName] || window.undoStacks[currentFileName].length === 0) return;
+  const stack = window.undoStacks[currentFileName];
+  if (!window.redoStacks[currentFileName]) window.redoStacks[currentFileName] = [];
+  window.redoStacks[currentFileName].push(JSON.stringify(chgData));
+  
+  const prevState = stack.pop();
+  chgData = JSON.parse(prevState);
+  loadedFiles[currentFileName] = chgData;
+
+  window.updateHistoryUI();
+  renderGraph();
+  buildOutline();
+  updatePropertiesPanel();
+  updateStatus();
+}
+
+window.redoHistory = function() {
+  if (!currentFileName || !window.redoStacks[currentFileName] || window.redoStacks[currentFileName].length === 0) return;
+  const stack = window.redoStacks[currentFileName];
+  if (!window.undoStacks[currentFileName]) window.undoStacks[currentFileName] = [];
+  window.undoStacks[currentFileName].push(JSON.stringify(chgData));
+  
+  const nextState = stack.pop();
+  chgData = JSON.parse(nextState);
+  loadedFiles[currentFileName] = chgData;
+
+  window.updateHistoryUI();
+  renderGraph();
+  buildOutline();
+  updatePropertiesPanel();
+  updateStatus();
+}
+
 // Load CSS Variables for Cytoscape
 const rootStyle = getComputedStyle(document.documentElement);
 const getCssVar = (name) => rootStyle.getPropertyValue(name).trim();
@@ -284,6 +351,11 @@ function setupTerminalToggle() {
   btn.addEventListener('click', () => {
     panel.classList.toggle('open');
     btn.classList.remove('flash');
+    if (panel.classList.contains('open')) {
+      btn.title = 'Close terminal';
+    } else {
+      btn.title = 'Open terminal';
+    }
   });
 
   panel.addEventListener('transitionend', (e) => {
@@ -294,6 +366,14 @@ function setupTerminalToggle() {
 }
 
 function setupToggles() {
+  document.getElementById('btn-undo').addEventListener('click', () => {
+    window.undoHistory();
+  });
+
+  document.getElementById('btn-redo').addEventListener('click', () => {
+    window.redoHistory();
+  });
+
   document.getElementById('btn-toggle-primary').addEventListener('click', () => {
     document.getElementById('primary-sidebar').classList.add('collapsed');
     document.getElementById('btn-expand-primary').classList.remove('hidden');
@@ -404,6 +484,7 @@ function setupFileControls() {
       if (!currentFrame) return;
       promptModal('Rename Frame', 'Enter new frame name...', (newName) => {
         if (!chgData.frames[newName] && newName !== currentFrame) {
+          window.pushHistory();
           chgData.frames[newName] = chgData.frames[currentFrame];
           delete chgData.frames[currentFrame];
           const frameSelect = document.getElementById('select-frame');
@@ -428,6 +509,7 @@ function setupFileControls() {
     btnAddFrame.addEventListener('click', () => {
       promptModal('Add Frame', 'Enter frame name...', (name) => {
         if (!chgData.frames[name]) {
+          window.pushHistory();
           chgData.frames[name] = {};
           const frameSelect = document.getElementById('select-frame');
           const opt = document.createElement('option');
@@ -457,6 +539,7 @@ function setupFileControls() {
         return;
       }
       if (confirm(`Are you sure you want to remove frame '${currentFrame}'? This will permanently delete it from the active graph.`)) {
+        window.pushHistory();
         delete chgData.frames[currentFrame];
         currentFrame = Object.keys(chgData.frames)[0];
 
@@ -474,11 +557,12 @@ function setupFileControls() {
     });
   }
 
-  const btnClearFrame = document.getElementById('btn-clear-frame');
+  const btnClearFrame = document.getElementById('btnClear-frame');
   if (btnClearFrame) {
     btnClearFrame.addEventListener('click', () => {
       if (!currentFrame) return;
       if (confirm(`Are you sure you want to reset all node values in frame '${currentFrame}'?`)) {
+        window.pushHistory();
         chgData.frames[currentFrame] = {};
         renderGraph();
         updatePropertiesPanel();
@@ -535,8 +619,20 @@ function setupFileControls() {
 
           const newFileName = `${cleanName}.chg`;
           if (newFileName !== currentFileName) {
+            window.pushHistory(); // push the rename to history
+            
             loadedFiles[newFileName] = loadedFiles[currentFileName];
             delete loadedFiles[currentFileName];
+            
+            if (window.undoStacks[currentFileName]) {
+              window.undoStacks[newFileName] = window.undoStacks[currentFileName];
+              delete window.undoStacks[currentFileName];
+            }
+            if (window.redoStacks[currentFileName]) {
+              window.redoStacks[newFileName] = window.redoStacks[currentFileName];
+              delete window.redoStacks[currentFileName];
+            }
+            
             currentFileName = newFileName;
             updateFileSelect();
           }
@@ -1037,7 +1133,8 @@ function updatePropertiesPanel() {
 
     // Setup listeners
     document.getElementById('prop-node-label').onchange = (e) => {
-      const newLabel = e.target.value;
+      window.pushHistory();
+      const newLabel = e.target.value.trim();
       if (newLabel && newLabel !== node.label) {
         // Sync to .chg file
         node.label = newLabel;
@@ -1109,6 +1206,7 @@ function updatePropertiesPanel() {
     };
 
     valInput.onchange = (e) => {
+      window.pushHistory();
       const newVal = e.target.value;
       if (!chgData.frames[currentFrame]) chgData.frames[currentFrame] = {};
 
@@ -1147,6 +1245,7 @@ function updatePropertiesPanel() {
     };
 
     document.getElementById('prop-node-const').onchange = (e) => {
+      window.pushHistory();
       node.is_constant = e.target.checked;
     };
 
@@ -1226,33 +1325,37 @@ function updatePropertiesPanel() {
     const ruleInput = document.getElementById('prop-edge-rule');
     if (ruleInput) {
       ruleInput.onchange = (e) => {
+        window.pushHistory();
         edge.rel = e.target.value;
       };
     }
 
     document.getElementById('prop-edge-label').onchange = (e) => {
-      const newLabel = e.target.value;
-      if (newLabel && newLabel !== edge.label) {
-        edge.label = newLabel;
-        VCHG_ELEMENT_SELECTED = newLabel;
-        renderGraph();
-        buildOutline();
-        selectEntity(newLabel, 'EDGE');
-      }
+      const newLabel = e.target.value.trim();
+      if (!newLabel || newLabel === edge.label) return;
+      window.pushHistory();
+      edge.label = newLabel;
+      VCHG_ELEMENT_SELECTED = newLabel;
+      renderGraph();
+      buildOutline();
+      selectEntity(newLabel, 'EDGE');
     };
 
     document.getElementById('prop-edge-weight').onchange = (e) => {
+      window.pushHistory();
       edge.weight = parseFloat(e.target.value) || 0;
       updateStatus();
     };
 
     document.getElementById('prop-edge-target').onchange = (e) => {
+      window.pushHistory();
       edge.target = e.target.value;
       renderGraph();
       buildOutline();
     };
 
     document.getElementById('btn-add-source').onclick = () => {
+      window.pushHistory();
       if (!edge.source_nodes) edge.source_nodes = {};
       const newKey = `s${Object.keys(edge.source_nodes).length + 1}`;
       edge.source_nodes[newKey] = "";
@@ -1261,6 +1364,7 @@ function updatePropertiesPanel() {
 
     document.querySelectorAll('.btn-del-source').forEach(btn => {
       btn.onclick = (e) => {
+        window.pushHistory();
         const key = e.target.getAttribute('data-key');
         delete edge.source_nodes[key];
         updatePropertiesPanel();
@@ -1269,6 +1373,7 @@ function updatePropertiesPanel() {
 
     document.querySelectorAll('.src-val').forEach(input => {
       input.onchange = (e) => {
+        window.pushHistory();
         const key = e.target.closest('.source-grid').getAttribute('data-key');
         edge.source_nodes[key] = e.target.value;
         renderGraph();
@@ -1363,6 +1468,8 @@ function setupEntityOperations() {
   if (inputAddEdge && inputSearchEdgeHint) attachAutocomplete(inputAddEdge, inputSearchEdgeHint, null, 'EDGE');
 
   const handleAddNode = () => {
+    const inputAddNode = document.getElementById('input-add-node');
+    const inputSearchNodeHint = document.getElementById('input-search-node-hint');
     if (!inputAddNode) return;
     const label = inputAddNode.value.trim();
     if (!label) return;
@@ -1376,6 +1483,7 @@ function setupEntityOperations() {
       if (cyNode) cy.center(cyNode);
       logOutput(`Selected existing node ${label}.`);
     } else {
+      window.pushHistory();
       chgData.hypergraph.nodes.push({ label: label, is_constant: false });
       inputAddNode.value = '';
       if (inputSearchNodeHint) inputSearchNodeHint.value = '';
@@ -1394,6 +1502,8 @@ function setupEntityOperations() {
   }
 
   const handleAddEdge = () => {
+    const inputAddEdge = document.getElementById('input-add-edge');
+    const inputSearchEdgeHint = document.getElementById('input-search-edge-hint');
     if (!inputAddEdge) return;
     const label = inputAddEdge.value.trim();
     if (!label) return;
@@ -1407,6 +1517,7 @@ function setupEntityOperations() {
       if (cyNode) cy.center(cyNode);
       logOutput(`Selected existing edge ${label}.`);
     } else {
+      window.pushHistory();
       chgData.hypergraph.edges.push({ label: label, target: "", source_nodes: {} });
       inputAddEdge.value = '';
       if (inputSearchEdgeHint) inputSearchEdgeHint.value = '';
@@ -1427,23 +1538,25 @@ function setupEntityOperations() {
   if (btnDelete) {
     btnDelete.addEventListener('click', () => {
       if (!VCHG_ELEMENT_SELECTED) return;
-
-      if (VCHG_KIND_SELECTED === 'NODE') {
-        chgData.hypergraph.nodes = chgData.hypergraph.nodes.filter(n => n.label !== VCHG_ELEMENT_SELECTED);
-        if (chgData.frames[currentFrame]) {
-          delete chgData.frames[currentFrame][VCHG_ELEMENT_SELECTED];
+      if (confirm(`Are you sure you want to remove '${VCHG_ELEMENT_SELECTED}'?`)) {
+        window.pushHistory();
+        if (VCHG_KIND_SELECTED === 'NODE') {
+          chgData.hypergraph.nodes = chgData.hypergraph.nodes.filter(n => n.label !== VCHG_ELEMENT_SELECTED);
+          if (chgData.frames[currentFrame]) {
+            delete chgData.frames[currentFrame][VCHG_ELEMENT_SELECTED];
+          }
+        } else if (VCHG_KIND_SELECTED === 'EDGE') {
+          chgData.hypergraph.edges = chgData.hypergraph.edges.filter(e => e.label !== VCHG_ELEMENT_SELECTED);
         }
-      } else if (VCHG_KIND_SELECTED === 'EDGE') {
-        chgData.hypergraph.edges = chgData.hypergraph.edges.filter(e => e.label !== VCHG_ELEMENT_SELECTED);
-      }
 
-      VCHG_ELEMENT_SELECTED = null;
-      VCHG_KIND_SELECTED = null;
-      renderGraph();
-      buildOutline();
-      updatePropertiesPanel();
-      updateSimulatePanel();
-      updateStatus();
+        VCHG_ELEMENT_SELECTED = null;
+        VCHG_KIND_SELECTED = null;
+        renderGraph();
+        buildOutline();
+        updatePropertiesPanel();
+        updateSimulatePanel();
+        updateStatus();
+      }
     });
   }
 }
