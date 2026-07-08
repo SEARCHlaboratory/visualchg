@@ -15,8 +15,8 @@
   <!-- PyScript (includes Pyodide) -->
   <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
   <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-  <script type="module" crossorigin src="/assets/index-DpjopIRG.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-Cju4priI.css">
+  <script type="module" crossorigin src="/assets/index-C6vLdhJE.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BgCSAhy-.css">
 </head>
 
 <body>
@@ -57,14 +57,20 @@
         </button>
         <button class="tab-btn active" data-target="tab-edit">Edit</button>
         <button class="tab-btn" data-target="tab-properties">Info</button>
-        <button class="tab-btn" data-target="tab-simulate">Simulate</button>
       </div>
 
       <div class="tab-content">
         <!-- Edit Tab -->
         <div id="tab-edit" class="tab-pane active">
           <section>
-            <h3>File</h3>
+            <h3>File <svg class="info-icon"
+                data-info="The file describing the hypergraph (with a .chg extension). You can create a new file by adding nodes and edges (at right) or upload a preexisting file."
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg></h3>
             <div class="input-group">
               <label for="select-file">Select File</label>
               <select id="select-file"></select>
@@ -79,7 +85,14 @@
           </section>
 
           <section>
-            <h3>Frame</h3>
+            <h3>Frame <svg class="info-icon"
+                data-info="A collection of values for the graph. You can add additional frames to represent different scenarios or input runs. Useful if you want to compare simulations of the same variable."
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg></h3>
             <div class="input-group">
               <label for="select-frame">Select Frame</label>
               <select id="select-frame"></select>
@@ -93,12 +106,18 @@
           </section>
 
           <section>
-            <h3>Demos</h3>
+            <h3>Demos <svg class="info-icon"
+                data-info="Loads a prebuild model to show how the software works. These and more examples are available online at https://constrainthg.readthedocs.io."
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg></h3>
             <div class="input-group mt-2">
               <label for="select-demo">Load Demo</label>
               <select id="select-demo">
                 <option value="">Select a demo...</option>
-                <option value="/demos/demo_basic.chg">Demo Basic</option>
               </select>
             </div>
           </section>
@@ -111,48 +130,145 @@
             <!-- Dynamic content injected by JS -->
           </div>
           <button id="btn-delete" class="btn danger hidden" style="margin-top: 16px;">Delete</button>
-        </div>
 
-        <!-- Simulate Tab -->
-        <div id="tab-simulate" class="tab-pane">
-          <div id="sim-empty-state">Select a node or path to simulate</div>
-          <div id="sim-content" class="hidden">
-            <div class="input-group">
-              <label>Minimum Index</label>
-              <input type="number" id="sim-min-index" value="0" />
+          <section id="sim-section" class="hidden"
+            style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <div id="sim-content">
+              <div class="input-with-info">
+                <button id="btn-run-sim" class="btn primary-action">Simulate</button>
+                <svg class="info-icon"
+                  data-info="Uses the ConstraintHg solver to see if there is a way to use the values you've entered (inputs) to solve for the value of the current node."
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+              </div>
+
+              <details class="mt-4">
+                <summary>Advanced</summary>
+                <div class="input-group mt-2">
+                  <div class="input-with-info">
+                    <label class="checkbox-label" style="margin: 0; flex: 1;">
+                      <input type="checkbox" id="sim-show-steps" checked />
+                      Show Solution Steps
+                    </label>
+                    <svg class="info-icon"
+                      data-info="Prints the full path to the console. Should be turned off for long paths."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="input-group inline-row mt-2">
+                  <label>Min Cycle Index</label>
+                  <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
+                    <input type="number" id="sim-min-index" value="0" />
+                    <svg class="info-icon"
+                      data-info="Sets how many times the solver should repeatedly solve for the node. This should only be set for dynamic systems where the target node is part of a cycle."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                </div>
+
+                <div class="input-group inline-row mt-2">
+                  <label>Log Level</label>
+                  <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
+                    <select id="sim-log-level">
+                      <option value="40">Errors</option>
+                      <option value="30">Warnings</option>
+                      <option value="20" selected>Information</option>
+                      <option value="11">Verbose</option>
+                      <option value="10">Debugging</option>
+                    </select>
+                    <svg class="info-icon" data-info="Controls the verbosity of the constrainthg solver output."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                </div>
+                <div class="input-group mt-2">
+                  <label>Debug Nodes (press Enter)</label>
+                  <div class="input-with-info">
+                    <input type="text" id="sim-debug-nodes" />
+                    <svg class="info-icon"
+                      data-info="Set nodes for which additional information will be shown on the log output."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                  <div id="debug-nodes-tags" class="tag-container"></div>
+                </div>
+                <div class="input-group mt-2">
+                  <label>Debug Edges (press Enter)</label>
+                  <div class="input-with-info">
+                    <input type="text" id="sim-debug-edges" />
+                    <svg class="info-icon"
+                      data-info="Set edges for which additional information will be shown on the log output."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                  <div id="debug-edges-tags" class="tag-container"></div>
+                </div>
+              </details>
             </div>
-
-            <button id="btn-run-sim" class="btn primary-action">Simulate</button>
-
-            <div class="input-group mt-2">
-              <label class="checkbox-label">
-                <input type="checkbox" id="sim-show-steps" checked />
-                Show Solution Steps
-              </label>
-            </div>
-
-            <details class="mt-4">
-              <summary>Advanced</summary>
-              <div class="input-group mt-2">
-                <label>Log Level</label>
-                <input type="number" id="sim-log-level" value="0" />
-              </div>
-              <div class="input-group mt-2">
-                <label>Debug Nodes (press Enter)</label>
-                <input type="text" id="sim-debug-nodes" />
-                <div id="debug-nodes-tags" class="tag-container"></div>
-              </div>
-              <div class="input-group mt-2">
-                <label>Debug Edges (press Enter)</label>
-                <input type="text" id="sim-debug-edges" />
-                <div id="debug-edges-tags" class="tag-container"></div>
-              </div>
-            </details>
-          </div>
+          </section>
         </div>
       </div>
       <!-- Primary Sidebar Bottom Logo -->
-      <img src="/assets/VisualCHG%20Logo-9343Nfwn.png" alt="VisualCHG Logo" class="sidebar-logo" />
+      <div class="sidebar-bottom-brand">
+        <img src="/assets/VisualCHG%20Logo-BY18oKsJ.png" alt="VisualCHG Logo" class="sidebar-logo" />
+        <div class="sidebar-links">
+          <a href="https://github.com/SEARCHlaboratory/visualchg" target="_blank" title="GitHub Repository">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+              </path>
+            </svg>
+          </a>
+          <a href="https://constrainthg.readthedocs.io" target="_blank" title="Documentation and Further Reading">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </a>
+          <a href="https://github.com/jmorris335/ConstraintHg/discussions" target="_blank" title="Discussions">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </a>
+          <a href="https://www.searchlaboratory.org" target="_blank" title="Lab Home Page">
+            <div
+              style="width: 18px; height: 18px; background-color: currentColor; -webkit-mask: url('/assets/SEARCH%20Lab%20Icon-DWUlPxyg.png') no-repeat center / contain; mask: url('/assets/SEARCH%20Lab%20Icon-DWUlPxyg.png') no-repeat center / contain;">
+            </div>
+          </a>
+        </div>
+      </div>
     </aside>
 
     <div class="resizer" id="resizer-left"></div>
@@ -196,19 +312,33 @@
 
       <!-- Status Bar (Bottom) -->
       <footer id="status-bar">
-        <div class="status-left" style="flex: 1; justify-content: flex-start;">
-          <button id="btn-toggle-terminal" class="icon-btn" title="Toggle Terminal">
+        <div class="status-left">
+          <button id="btn-toggle-terminal" class="icon-btn" title="Open terminal">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round">
               <polyline points="4 17 10 11 4 5"></polyline>
               <line x1="12" y1="19" x2="20" y2="19"></line>
             </svg>
           </button>
+          <button id="btn-undo" class="icon-btn disabled" title="Undo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 7v6h6"></path>
+              <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"></path>
+            </svg>
+          </button>
+          <button id="btn-redo" class="icon-btn disabled" title="Redo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 7v6h-6"></path>
+              <path d="M3 17a9 9 0 019-9 9 9 0 016 2.3l3 2.7"></path>
+            </svg>
+          </button>
         </div>
-        <div class="status-center" id="status-filename" style="flex: 1; text-align: center; font-weight: 500;">
+        <div class="status-center" id="status-filename">
           New Hypergraph
         </div>
-        <div class="status-right" id="status-text" style="flex: 1; justify-content: flex-end; text-align: right;">
+        <div class="status-right" id="status-text">
           Ready
         </div>
       </footer>
@@ -232,7 +362,10 @@
       <div class="tab-content">
         <div id="tab-nodes" class="tab-pane active">
           <div class="inline-add-row">
-            <input type="text" id="input-add-node" placeholder="Add new node" />
+            <div class="autocomplete-wrapper" style="flex: 1;">
+              <input type="text" class="autocomplete-hint" id="input-search-node-hint" disabled />
+              <input type="text" class="autocomplete-input" id="input-add-node" placeholder="search or add node" />
+            </div>
             <button id="btn-inline-add-node" class="inline-add-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -245,7 +378,10 @@
         </div>
         <div id="tab-edges" class="tab-pane">
           <div class="inline-add-row">
-            <input type="text" id="input-add-edge" placeholder="Add new edge" />
+            <div class="autocomplete-wrapper" style="flex: 1;">
+              <input type="text" class="autocomplete-hint" id="input-search-edge-hint" disabled />
+              <input type="text" class="autocomplete-input" id="input-add-edge" placeholder="search or add edge" />
+            </div>
             <button id="btn-inline-add-edge" class="inline-add-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -280,7 +416,10 @@
     # Let stderr also go to the output or keep it default.
     sys.stderr = JSOutput()
     
+    last_log_size = 0
+    
     def run_simulation(file_data, output_node, frame_key, min_index, to_print, log_level, debug_nodes, debug_edges):
+        global last_log_size
         import json
         from simulate_chg import make_hypergraph, get_inputs
         
@@ -301,11 +440,20 @@
             t = simulate('temp.chg', output_node, frame_key, **solve_kwargs)
             
             import os
+            import logging
+            
+            # Flush all log handlers to ensure logs are written to disk
+            for logger in [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values()):
+                if isinstance(logger, logging.Logger):
+                    for handler in logger.handlers:
+                        handler.flush()
+            
             log_contents = ""
             if os.path.exists("constrainthg.log"):
                 with open("constrainthg.log", "r") as f_log:
+                    f_log.seek(last_log_size)
                     log_contents = f_log.read()
-                os.remove("constrainthg.log")
+                    last_log_size = f_log.tell()
 
             if t is not None:
                 path_info = get_path_info(t)
