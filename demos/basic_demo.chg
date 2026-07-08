@@ -31,7 +31,7 @@
     ],
     "edges": [
       {
-        "label": "edge1",
+        "label": "sum1",
         "rel": "def sum(a, b):\n    return a + b\n",
         "source_nodes": {
           "a": "A",
@@ -41,7 +41,7 @@
         "weight": 100
       },
       {
-        "label": "edge2",
+        "label": "negate1",
         "rel": "def negate(a):\n    return -a\n",
         "source_nodes": {
           "a": "A"
@@ -50,7 +50,7 @@
         "weight": 1
       },
       {
-        "label": "edge3",
+        "label": "negate2",
         "rel": "def negate(a):\n    return -a\n",
         "source_nodes": {
           "a": "B"
@@ -59,7 +59,7 @@
         "weight": 26
       },
       {
-        "label": "edge4",
+        "label": "sum2",
         "rel": "def sum(a, b):\n    return a + b\n",
         "source_nodes": {
           "a": "D",
@@ -69,7 +69,7 @@
         "weight": 1
       },
       {
-        "label": "edge5",
+        "label": "negate3",
         "rel": "def negate(a):\n    return -a\n",
         "source_nodes": {
           "a": "F"

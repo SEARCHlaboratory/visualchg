@@ -130,7 +130,13 @@
 
                 <div class="input-group inline-row mt-2">
                   <label>Log Level</label>
-                  <input type="number" id="sim-log-level" value="0" />
+                  <select id="sim-log-level">
+                    <option value="40">Errors</option>
+                    <option value="30">Warnings</option>
+                    <option value="20" selected>Information</option>
+                    <option value="11">Verbose</option>
+                    <option value="10">Debugging</option>
+                  </select>
                 </div>
                 <div class="input-group mt-2">
                   <label>Debug Nodes (press Enter)</label>
@@ -228,7 +234,10 @@
       <div class="tab-content">
         <div id="tab-nodes" class="tab-pane active">
           <div class="inline-add-row">
-            <input type="text" id="input-add-node" placeholder="Add new node" />
+            <div class="autocomplete-wrapper" style="flex: 1;">
+              <input type="text" class="autocomplete-hint" id="input-search-node-hint" disabled />
+              <input type="text" class="autocomplete-input" id="input-add-node" placeholder="search or add node" />
+            </div>
             <button id="btn-inline-add-node" class="inline-add-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -241,7 +250,10 @@
         </div>
         <div id="tab-edges" class="tab-pane">
           <div class="inline-add-row">
-            <input type="text" id="input-add-edge" placeholder="Add new edge" />
+            <div class="autocomplete-wrapper" style="flex: 1;">
+              <input type="text" class="autocomplete-hint" id="input-search-edge-hint" disabled />
+              <input type="text" class="autocomplete-input" id="input-add-edge" placeholder="search or add edge" />
+            </div>
             <button id="btn-inline-add-edge" class="inline-add-btn">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                 stroke-linecap="round" stroke-linejoin="round">
@@ -276,7 +288,10 @@
     # Let stderr also go to the output or keep it default.
     sys.stderr = JSOutput()
     
+    last_log_size = 0
+    
     def run_simulation(file_data, output_node, frame_key, min_index, to_print, log_level, debug_nodes, debug_edges):
+        global last_log_size
         import json
         from simulate_chg import make_hypergraph, get_inputs
         
@@ -297,11 +312,20 @@
             t = simulate('temp.chg', output_node, frame_key, **solve_kwargs)
             
             import os
+            import logging
+            
+            # Flush all log handlers to ensure logs are written to disk
+            for logger in [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values()):
+                if isinstance(logger, logging.Logger):
+                    for handler in logger.handlers:
+                        handler.flush()
+            
             log_contents = ""
             if os.path.exists("constrainthg.log"):
                 with open("constrainthg.log", "r") as f_log:
+                    f_log.seek(last_log_size)
                     log_contents = f_log.read()
-                os.remove("constrainthg.log")
+                    last_log_size = f_log.tell()
 
             if t is not None:
                 path_info = get_path_info(t)

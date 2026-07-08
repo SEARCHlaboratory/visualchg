@@ -337,6 +337,13 @@ section {
 
 .input-group.inline-row label {
   margin-bottom: 0;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
+.input-group.inline-row select {
+  width: auto;
+  min-width: 100px;
 }
 
 .input-group.inline-row input[type="number"] {

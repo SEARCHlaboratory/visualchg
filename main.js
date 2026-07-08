@@ -338,14 +338,15 @@ function setupLayoutControls() {
   document.querySelectorAll('.layout-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const layoutName = e.target.getAttribute('data-layout');
-      cy.layout({
+      const layoutOptions = {
         name: layoutName,
         animate: true,
         padding: 50,
-        spacingFactor: 0.75,
+        spacingFactor: layoutName === 'concentric' ? 1.5 : 0.75,
         nodeDimensionsIncludeLabels: true,
         avoidOverlap: true
-      }).run();
+      };
+      cy.layout(layoutOptions).run();
       document.getElementById('layout-controls').classList.add('hidden');
     });
   });
@@ -407,6 +408,45 @@ function setupFileControls() {
           logOutput(`Frame ${name} already exists.`, true);
         }
       });
+    });
+  }
+
+  const btnRemoveFrame = document.getElementById('btn-remove-frame');
+  if (btnRemoveFrame) {
+    btnRemoveFrame.addEventListener('click', () => {
+      if (!currentFrame) return;
+      if (Object.keys(chgData.frames).length <= 1) {
+        logOutput('Cannot remove the only frame in the hypergraph.', true);
+        return;
+      }
+      if (confirm(`Are you sure you want to remove frame '${currentFrame}'? This will permanently delete it from the active graph.`)) {
+        delete chgData.frames[currentFrame];
+        currentFrame = Object.keys(chgData.frames)[0];
+        
+        const frameSelect = document.getElementById('select-frame');
+        if (frameSelect) {
+          Array.from(frameSelect.options).forEach(opt => {
+            if (!chgData.frames[opt.value]) opt.remove();
+          });
+          frameSelect.value = currentFrame;
+        }
+        renderGraph();
+        updatePropertiesPanel();
+        logOutput(`Frame removed. Switched to ${currentFrame}.`);
+      }
+    });
+  }
+
+  const btnClearFrame = document.getElementById('btn-clear-frame');
+  if (btnClearFrame) {
+    btnClearFrame.addEventListener('click', () => {
+      if (!currentFrame) return;
+      if (confirm(`Are you sure you want to reset all node values in frame '${currentFrame}'?`)) {
+        chgData.frames[currentFrame] = {};
+        renderGraph();
+        updatePropertiesPanel();
+        logOutput(`Frame ${currentFrame} reset.`);
+      }
     });
   }
 
@@ -794,17 +834,29 @@ function arrangeFocused(centerNode, leftNodes, rightNodes) {
 }
 
 function selectEntity(label, kind, doFocus = false) {
-  VCHG_ELEMENT_SELECTED = label;
-  VCHG_KIND_SELECTED = kind;
+  if (label && kind) {
+    VCHG_ELEMENT_SELECTED = label;
+    VCHG_KIND_SELECTED = kind;
+  } else {
+    VCHG_ELEMENT_SELECTED = null;
+    VCHG_KIND_SELECTED = null;
+  }
 
   // Update Selection Visuals
-  cy.elements().removeClass('selected hidden-node');
+  cy.elements().unselect().removeClass('hidden-node');
   document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
 
   if (label && kind) {
     const cyId = kind === 'NODE' ? `N_${label}` : `E_${label}`;
     const centerNode = cy.getElementById(cyId);
-    centerNode.addClass('selected');
+    if (centerNode) centerNode.select();
+
+    // Auto-open info tab if not collapsed
+    const primarySidebar = document.getElementById('primary-sidebar');
+    if (primarySidebar && !primarySidebar.classList.contains('collapsed')) {
+      const infoTabBtn = document.querySelector('.tab-btn[data-target="tab-properties"]');
+      if (infoTabBtn) infoTabBtn.click();
+    }
 
     const treeEl = document.querySelector(`.tree-item[data-label="${label}"][data-kind="${kind}"]`);
     if (treeEl) {
@@ -885,7 +937,7 @@ function updatePropertiesPanel() {
         <input type="text" id="prop-node-label" value="${node.label}" />
       </div>
       <div class="input-group">
-        <label>Value (Current Frame)</label>
+        <label>Value <i>(frame: ${currentFrame})</i></label>
         <div class="value-input-wrapper">
           <input type="text" id="prop-node-val" value="${val}" />
           <button id="btn-apply-sim" class="icon-btn hidden" title="Apply simulated value" style="color: #22c55e; flex-shrink: 0;">
@@ -1153,20 +1205,34 @@ function setupEntityOperations() {
   const btnInlineAddEdge = document.getElementById('btn-inline-add-edge');
   const btnDelete = document.getElementById('btn-delete');
 
+  const inputSearchNodeHint = document.getElementById('input-search-node-hint');
+  const inputSearchEdgeHint = document.getElementById('input-search-edge-hint');
+  
+  if (inputAddNode && inputSearchNodeHint) attachAutocomplete(inputAddNode, inputSearchNodeHint, null, 'NODE');
+  if (inputAddEdge && inputSearchEdgeHint) attachAutocomplete(inputAddEdge, inputSearchEdgeHint, null, 'EDGE');
+
   const handleAddNode = () => {
     if (!inputAddNode) return;
     const label = inputAddNode.value.trim();
     if (!label) return;
     if (!chgData.hypergraph.nodes) chgData.hypergraph.nodes = [];
+    
     if (chgData.hypergraph.nodes.find(n => n.label === label)) {
-      logOutput(`Node ${label} already exists.`, true);
-      return;
+      inputAddNode.value = '';
+      if (inputSearchNodeHint) inputSearchNodeHint.value = '';
+      selectEntity(label, 'NODE', false);
+      const cyNode = cy.getElementById(`N_${label}`);
+      if (cyNode) cy.center(cyNode);
+      logOutput(`Selected existing node ${label}.`);
+    } else {
+      chgData.hypergraph.nodes.push({ label: label, is_constant: false });
+      inputAddNode.value = '';
+      if (inputSearchNodeHint) inputSearchNodeHint.value = '';
+      renderGraph();
+      buildOutline();
+      selectEntity(label, 'NODE', false);
+      logOutput(`Added node ${label}.`);
     }
-    chgData.hypergraph.nodes.push({ label: label, is_constant: false });
-    inputAddNode.value = '';
-    renderGraph();
-    buildOutline();
-    selectEntity(label, 'NODE', false);
   };
 
   if (btnInlineAddNode && inputAddNode) {
@@ -1181,15 +1247,23 @@ function setupEntityOperations() {
     const label = inputAddEdge.value.trim();
     if (!label) return;
     if (!chgData.hypergraph.edges) chgData.hypergraph.edges = [];
+    
     if (chgData.hypergraph.edges.find(e => e.label === label)) {
-      logOutput(`Edge ${label} already exists.`, true);
-      return;
+      inputAddEdge.value = '';
+      if (inputSearchEdgeHint) inputSearchEdgeHint.value = '';
+      selectEntity(label, 'EDGE', false);
+      const cyNode = cy.getElementById(`E_${label}`);
+      if (cyNode) cy.center(cyNode);
+      logOutput(`Selected existing edge ${label}.`);
+    } else {
+      chgData.hypergraph.edges.push({ label: label, target: "", source_nodes: {} });
+      inputAddEdge.value = '';
+      if (inputSearchEdgeHint) inputSearchEdgeHint.value = '';
+      renderGraph();
+      buildOutline();
+      selectEntity(label, 'EDGE', false);
+      logOutput(`Added edge ${label}.`);
     }
-    chgData.hypergraph.edges.push({ label: label, target: "", source_nodes: {} });
-    inputAddEdge.value = '';
-    renderGraph();
-    buildOutline();
-    selectEntity(label, 'EDGE', false);
   };
 
   if (btnInlineAddEdge && inputAddEdge) {
