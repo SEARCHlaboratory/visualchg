@@ -427,7 +427,6 @@
             f.write(file_data)
         
         solve_kwargs = {
-            'to_print': to_print,
             'min_index': min_index,
             'debug_nodes': debug_nodes.to_py() if hasattr(debug_nodes, 'to_py') else debug_nodes,
             'debug_edges': debug_edges.to_py() if hasattr(debug_edges, 'to_py') else debug_edges
@@ -436,8 +435,8 @@
             solve_kwargs['logging_level'] = log_level
             
         try:
+            print(f"Simulating {output_node}...")
             t = simulate('temp.chg', output_node, frame_key, **solve_kwargs)
-            
             import os
             import logging
             
@@ -455,8 +454,13 @@
                     last_log_size = f_log.tell()
 
             if t is not None:
+                print(f" Results: {t}")
+                if to_print:
+                  print("\n── Simulation Path ──")
+                  print(t.get_tree())
+
                 path_info = get_path_info(t)
-                return json.dumps({
+                out = json.dumps({
                     'success': True,
                     'msg': str(t),
                     'value': t.value,
@@ -466,6 +470,7 @@
                     'log': log_contents,
                     **path_info
                 })
+                return out
             else:
                 return json.dumps({'success': False, 'error': 'No solution found'})
         except Exception as e:
