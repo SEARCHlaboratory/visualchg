@@ -451,22 +451,65 @@ function setupResizers() {
   });
 }
 
+window.currentLayoutName = 'grid';
+
+window.runCurrentLayout = function() {
+  if (!cy) return;
+  const spacingSlider = document.getElementById('layout-spacing-slider');
+  const spacingVal = spacingSlider ? parseFloat(spacingSlider.value) : (window.currentLayoutName === 'concentric' ? 1.5 : 0.75);
+  
+  const layoutOptions = {
+    name: window.currentLayoutName,
+    animate: true,
+    padding: 50,
+    spacingFactor: spacingVal,
+    nodeDimensionsIncludeLabels: true,
+    avoidOverlap: true
+  };
+  cy.layout(layoutOptions).run();
+};
+
 function setupLayoutControls() {
   document.querySelectorAll('.layout-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      const layoutName = e.target.getAttribute('data-layout');
-      const layoutOptions = {
-        name: layoutName,
-        animate: true,
-        padding: 50,
-        spacingFactor: layoutName === 'concentric' ? 1.5 : 0.75,
-        nodeDimensionsIncludeLabels: true,
-        avoidOverlap: true
-      };
-      cy.layout(layoutOptions).run();
+      window.currentLayoutName = e.target.getAttribute('data-layout');
+      window.runCurrentLayout();
       document.getElementById('layout-controls').classList.add('hidden');
     });
   });
+
+  const spacingSlider = document.getElementById('layout-spacing-slider');
+  const spacingValText = document.getElementById('layout-spacing-val');
+  if (spacingSlider) {
+    spacingSlider.addEventListener('input', () => {
+      if (spacingValText) spacingValText.textContent = parseFloat(spacingSlider.value).toFixed(1);
+      window.runCurrentLayout();
+    });
+  }
+
+  const zoomSlider = document.getElementById('layout-zoom-slider');
+  const zoomValText = document.getElementById('layout-zoom-val');
+  if (zoomSlider && cy) {
+    zoomSlider.value = cy.zoom();
+    if (zoomValText) zoomValText.textContent = cy.zoom().toFixed(1);
+
+    zoomSlider.addEventListener('input', () => {
+      const z = parseFloat(zoomSlider.value);
+      if (zoomValText) zoomValText.textContent = z.toFixed(1);
+      cy.zoom({
+        level: z,
+        renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 }
+      });
+    });
+
+    cy.on('zoom', () => {
+      if (document.activeElement !== zoomSlider) {
+        const z = cy.zoom();
+        zoomSlider.value = z;
+        if (zoomValText) zoomValText.textContent = z.toFixed(1);
+      }
+    });
+  }
 }
 
 function setupFileControls() {
@@ -851,14 +894,7 @@ function renderGraph() {
 
 // Renders the default view for the graph
 function renderDefault() {
-  cy.layout({
-    name: 'grid',
-    animate: true,
-    padding: 50,
-    spacingFactor: 0.75,
-    nodeDimensionsIncludeLabels: true,
-    avoidOverlap: true
-  }).run();
+  window.runCurrentLayout();
 }
 
 function buildOutline() {

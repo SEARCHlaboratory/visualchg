@@ -685,10 +685,22 @@ section {
   right: 16px;
   z-index: 20;
   display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 8px;
   transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-controls-container::before {
+  content: "";
+  position: absolute;
+  top: -24px; right: -24px; bottom: -24px; left: -24px;
+  background: var(--bg-color);
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+  z-index: -1;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
 }
 
 #main-view:has(#terminal-panel.open) .floating-controls-container {
@@ -697,14 +709,13 @@ section {
 
 #layout-controls {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: 4px;
-  background: var(--panel-bg);
-  backdrop-filter: blur(8px);
+  background: transparent;
   padding: 8px;
   border-radius: 8px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  box-shadow: none;
   animation: fadeIn 0.2s ease;
 }
 
