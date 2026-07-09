@@ -40,10 +40,13 @@ def preprocess_json(json_data: dict) -> dict:
     return data
 
 
-def make_hypergraph(json_data: dict) -> Hypergraph:
+def make_hypergraph(json_data: dict, use_relations: bool = True) -> Hypergraph:
     """Creates the hypergraph from a parsed JSON dict."""
     hg = Hypergraph(unsafe_mode=True)
-    hg.from_json(blob=json.dumps(preprocess_json(json_data)))
+    mn = []
+    if use_relations:
+        mn.append('constrainthg.relations')
+    hg.from_json(blob=json.dumps(preprocess_json(json_data)), module_names=mn)
     return hg
 
 
@@ -65,11 +68,11 @@ def get_path_info(t) -> dict:
     }
 
 
-def simulate(file_path: str, output_node: str, frame_key: str, **kwargs):
+def simulate(file_path: str, output_node: str, frame_key: str, use_relations: bool = True, **kwargs):
     """Simulates a hypergraph for the specified output_node."""
     with open(file_path, 'r') as f:
         json_data = json.load(f)
-    hg = make_hypergraph(json_data)
+    hg = make_hypergraph(json_data, use_relations=use_relations)
     inputs = get_inputs(json_data, frame_key)
 
     t = hg.solve(output_node, inputs=inputs, **kwargs)

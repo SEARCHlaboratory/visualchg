@@ -138,7 +138,7 @@
       },
       {
         "label": "F->alpha",
-        "rel": "def Requal(*args, **kwargs):\n    args, kwargs = get_keyword_arguments(args, kwargs, identifier)\n    return kwargs[identifier]\n",
+        "rel": "def Rfirst(F): return F",
         "source_nodes": {
           "F": "gravitational force"
         },
@@ -159,7 +159,7 @@
         },
         "target": "omega",
         "weight": 1.0,
-        "index_via": "index_via=lambda slope, initial_val: slope - 1 == initial_val,\n",
+        "index_via": "def iv(slope, initial_val):\n    return slope - 1 == initial_val",
         "disposable": [
           "slope",
           "intial_val"
@@ -175,7 +175,7 @@
         },
         "target": "theta",
         "weight": 1.0,
-        "index_via": "index_via=lambda slope, initial_val: slope - 1 == initial_val,\n",
+        "index_via": "def iv(slope, initial_val):\n    return slope - 1 == initial_val",
         "disposable": [
           "slope",
           "intial_val"
@@ -197,7 +197,7 @@
       },
       {
         "label": "calc_resting_theta",
-        "rel": "self.rel = lambda *args, **kwargs: self.og_rel(*args, **og_kwargs(**kwargs))\n",
+        "rel": "def check_threshold(s1, s2):\n   return max(abs(s1), abs(s2)) < .05",
         "source_nodes": {
           "s1": "theta",
           "s2": "omega",
@@ -206,7 +206,7 @@
         },
         "target": "resting_theta",
         "weight": 1.0,
-        "via": "def level_check(**kwargs):\n    \"\"\"Returns true if all passed indices are equivalent.\"\"\"\n    if not self.filtered_call(kwargs, self.og_via):\n        return False\n    idxs = {val for key, val in kwargs.items() if key in tuple_idxs}\n    return len(idxs) == 1\n",
+        "via": "def level_check(s3, s4, **kwargs): return s3 == s4",
         "disposable": [
           "s1",
           "s2",
@@ -221,7 +221,14 @@
     ]
   },
   "frames": {
-    "frame0": {
+    "simple": {
+      "theta0": 0.5,
+      "gravity": 10,
+      "radius": 1,
+      "omega0": 0,
+      "time_step": 0.01
+    },
+    "fullrun": {
       "theta": [
         0.5235983333333333,
         0.5145983402275627,

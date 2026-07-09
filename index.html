@@ -147,6 +147,21 @@
 
               <details class="mt-4">
                 <summary>Advanced</summary>
+                <div class="input-group inline-row mt-2">
+                  <label>Min Cycle Index</label>
+                  <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
+                    <input type="number" id="sim-min-index" value="0" />
+                    <svg class="info-icon"
+                      data-info="Sets how many times the solver should repeatedly solve for the node. This should only be set for dynamic systems where the target node is part of a cycle."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                </div>
+
                 <div class="input-group mt-2">
                   <div class="input-with-info">
                     <label class="checkbox-label" style="margin: 0; flex: 1;">
@@ -164,12 +179,14 @@
                   </div>
                 </div>
 
-                <div class="input-group inline-row mt-2">
-                  <label>Min Cycle Index</label>
-                  <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
-                    <input type="number" id="sim-min-index" value="0" />
+                <div class="input-group mt-2">
+                  <div class="input-with-info">
+                    <label class="checkbox-label" style="margin: 0; flex: 1;">
+                      <input type="checkbox" id="sim-use-relations" checked />
+                      Use relations library
+                    </label>
                     <svg class="info-icon"
-                      data-info="Sets how many times the solver should repeatedly solve for the node. This should only be set for dynamic systems where the target node is part of a cycle."
+                      data-info="Click to include basic relationships defined in the constrainthg.relations module. This allows these methods to be referenced from the Edge rules."
                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                       stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -430,7 +447,7 @@
     
     last_log_size = 0
     
-    def run_simulation(file_data, output_node, frame_key, min_index, to_print, log_level, debug_nodes, debug_edges):
+    def run_simulation(file_data, output_node, frame_key, min_index, to_print, log_level, debug_nodes, debug_edges, use_relations):
         global last_log_size
         import json
         from simulate_chg import make_hypergraph, get_inputs
@@ -449,7 +466,7 @@
             
         try:
             print(f"Simulating {output_node}...")
-            t = simulate('temp.chg', output_node, frame_key, **solve_kwargs)
+            t = simulate('temp.chg', output_node, frame_key, use_relations=use_relations, **solve_kwargs)
             import os
             import logging
             

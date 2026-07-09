@@ -1682,6 +1682,7 @@ function setupSimulateControls() {
     const min_index = parseInt(document.getElementById('sim-min-index').value) || 0;
     const to_print = document.getElementById('sim-show-steps').checked;
     const log_level = parseInt(document.getElementById('sim-log-level').value) || 0;
+    const use_relations = document.getElementById('sim-use-relations').checked;
 
     const dNodes = Array.from(document.getElementById('debug-nodes-tags').children).map(c => c.dataset.val);
     const dEdges = Array.from(document.getElementById('debug-edges-tags').children).map(c => c.dataset.val);
@@ -1690,7 +1691,7 @@ function setupSimulateControls() {
       if (window.py_run_simulation) {
         const file_data = JSON.stringify(chgData);
         // Pyodide call
-        const resStr = await window.py_run_simulation(file_data, VCHG_ELEMENT_SELECTED, currentFrame, min_index, to_print, log_level, dNodes, dEdges);
+        const resStr = await window.py_run_simulation(file_data, VCHG_ELEMENT_SELECTED, currentFrame, min_index, to_print, log_level, dNodes, dEdges, use_relations);
         const res = JSON.parse(resStr);
         if (res.log) {
           const logEl = document.getElementById('output-log');

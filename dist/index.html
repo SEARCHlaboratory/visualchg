@@ -15,8 +15,8 @@
   <!-- PyScript (includes Pyodide) -->
   <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
   <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-  <script type="module" crossorigin src="/assets/index-C6vLdhJE.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-BgCSAhy-.css">
+  <script type="module" crossorigin src="/assets/index-BnOsRsmB.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DUg5gQlp.css">
 </head>
 
 <body>
@@ -148,6 +148,21 @@
 
               <details class="mt-4">
                 <summary>Advanced</summary>
+                <div class="input-group inline-row mt-2">
+                  <label>Min Cycle Index</label>
+                  <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
+                    <input type="number" id="sim-min-index" value="0" />
+                    <svg class="info-icon"
+                      data-info="Sets how many times the solver should repeatedly solve for the node. This should only be set for dynamic systems where the target node is part of a cycle."
+                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                  </div>
+                </div>
+
                 <div class="input-group mt-2">
                   <div class="input-with-info">
                     <label class="checkbox-label" style="margin: 0; flex: 1;">
@@ -165,12 +180,14 @@
                   </div>
                 </div>
 
-                <div class="input-group inline-row mt-2">
-                  <label>Min Cycle Index</label>
-                  <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
-                    <input type="number" id="sim-min-index" value="0" />
+                <div class="input-group mt-2">
+                  <div class="input-with-info">
+                    <label class="checkbox-label" style="margin: 0; flex: 1;">
+                      <input type="checkbox" id="sim-use-relations" checked />
+                      Use relations library
+                    </label>
                     <svg class="info-icon"
-                      data-info="Sets how many times the solver should repeatedly solve for the node. This should only be set for dynamic systems where the target node is part of a cycle."
+                      data-info="Click to include basic relationships defined in the constrainthg.relations module. This allows these methods to be referenced from the Edge rules."
                       viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                       stroke-linejoin="round">
                       <circle cx="12" cy="12" r="10"></circle>
@@ -236,7 +253,7 @@
       </div>
       <!-- Primary Sidebar Bottom Logo -->
       <div class="sidebar-bottom-brand">
-        <img src="/assets/VisualCHG%20Logo-BY18oKsJ.png" alt="VisualCHG Logo" class="sidebar-logo" />
+        <img src="/assets/VisualCHG%20Logo-CJZCqjWH.png" alt="VisualCHG Logo" class="sidebar-logo" />
         <div class="sidebar-links">
           <a href="https://github.com/SEARCHlaboratory/visualchg" target="_blank" title="GitHub Repository">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -280,16 +297,29 @@
 
       <!-- Layout Controls (Bottom Right) -->
       <div id="layout-controls-container" class="floating-controls-container">
-        <button id="btn-clear-path" class="btn"
-          style="background-color: #f59e0b; color: white; display: none; margin-bottom: 0; width: auto;">Clear</button>
-        <button id="btn-toggle-view" class="btn primary-action" style="margin-bottom:0; width: auto;">View</button>
         <div id="layout-controls" class="hidden">
-          <button class="layout-btn" data-layout="grid">Grid</button>
-          <button class="layout-btn" data-layout="circle">Circle</button>
-          <button class="layout-btn" data-layout="concentric">Concentric</button>
-          <button class="layout-btn" data-layout="breadthfirst">Tree</button>
-          <button class="layout-btn" data-layout="cose">Cose</button>
-          <button class="layout-btn" data-layout="random">Random</button>
+          <div style="display: flex; justify-content: flex-end; align-items: center; width: 100%; margin-bottom: 8px;">
+            <label for="layout-zoom-slider" style="margin-right: 8px; font-size: 0.85rem; color: var(--text-color);">Zoom</label>
+            <input type="range" id="layout-zoom-slider" min="0.1" max="5.0" step="0.1" value="1.0" style="width: 100px;">
+            <span id="layout-zoom-val" style="margin-left: 8px; font-size: 0.85rem; color: var(--text-color); width: 20px; text-align: right;">1.0</span>
+          </div>
+          <div style="display: flex; justify-content: flex-end; align-items: center; width: 100%; margin-bottom: 8px;">
+            <label for="layout-spacing-slider" style="margin-right: 8px; font-size: 0.85rem; color: var(--text-color);">Spacing</label>
+            <input type="range" id="layout-spacing-slider" min="0.1" max="5.0" step="0.1" value="1.0" style="width: 100px;">
+            <span id="layout-spacing-val" style="margin-left: 8px; font-size: 0.85rem; color: var(--text-color); width: 20px; text-align: right;">1.0</span>
+          </div>
+          <div style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;">
+            <button class="layout-btn" data-layout="grid">Grid</button>
+            <button class="layout-btn" data-layout="circle">Circle</button>
+            <button class="layout-btn" data-layout="concentric">Concentric</button>
+            <button class="layout-btn" data-layout="breadthfirst">Tree</button>
+            <button class="layout-btn" data-layout="cose">Cose</button>
+            <button class="layout-btn" data-layout="random">Random</button>
+          </div>
+        </div>
+        <div class="view-actions-row" style="display: flex; gap: 8px; justify-content: flex-end;">
+          <button id="btn-clear-path" class="btn" style="background-color: #f59e0b; color: white; display: none; margin-bottom: 0; width: auto;">Clear</button>
+          <button id="btn-toggle-view" class="btn primary-action" style="margin-bottom:0; width: auto;">View</button>
         </div>
       </div>
 
@@ -418,7 +448,7 @@
     
     last_log_size = 0
     
-    def run_simulation(file_data, output_node, frame_key, min_index, to_print, log_level, debug_nodes, debug_edges):
+    def run_simulation(file_data, output_node, frame_key, min_index, to_print, log_level, debug_nodes, debug_edges, use_relations):
         global last_log_size
         import json
         from simulate_chg import make_hypergraph, get_inputs
@@ -437,7 +467,7 @@
             
         try:
             print(f"Simulating {output_node}...")
-            t = simulate('temp.chg', output_node, frame_key, **solve_kwargs)
+            t = simulate('temp.chg', output_node, frame_key, use_relations=use_relations, **solve_kwargs)
             import os
             import logging
             
