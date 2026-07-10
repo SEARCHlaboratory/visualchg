@@ -444,7 +444,7 @@
         "target": "blade_velocity",
         "weight": 1.0,
         "via": "def Rcheck_blade_is_clearing(is_clearing, is_returning, **kw):\n    \"Checks if the blade is clearing.\"\n    return is_clearing and not is_returning\n",
-        "index_via": "def Ridx_blade_moving(is_clearing, is_returning, **kw):\n    \"Checks if the blade is clearing for indexing.\"\n    return Rsame(is_clearing, is_returning)\n",
+        "index_via": "def Ridx_blade_moving(is_clearing, is_returning, **kw):\n    \"Checks if the blade is clearing for indexing.\"\n    return is_clearing == is_returning\n",
         "disposable": [
           "is_clearing",
           "is_returning"
@@ -461,7 +461,7 @@
         "target": "blade_velocity",
         "weight": 1.0,
         "via": "def Rcheck_blade_is_returning(is_clearing, is_returning, **kw):\n    \"Checks if the blade is returning.\"\n    return not is_clearing and is_returning\n",
-        "index_via": "def Ridx_blade_moving(is_clearing, is_returning, **kw):\n    \"Checks if the blade is clearing for indexing.\"\n    return Rsame(is_clearing, is_returning)\n",
+        "index_via": "def Ridx_blade_moving(is_clearing, is_returning, **kw):\n    \"Checks if the blade is clearing for indexing.\"\n    return is_clearing == is_returning\n",
         "disposable": [
           "is_clearing",
           "is_returning"
@@ -510,7 +510,7 @@
       },
       {
         "label": "(blad)->blade_at",
-        "rel": "def Rcyclecounter(*args, **kwargs):\n    args, kwargs = get_keyword_arguments(args, kwargs, identifier)\n    return kwargs[identifier] >= val\n",
+        "rel": "def Rcheck_close_to_edge(rel_pos, **kw):\n    \"Checks if the relative position is close to the edge.\"\n    return rel_pos >= 0.99\n",
         "source_nodes": {
           "rel_pos": "blade_relative_position"
         },
@@ -588,18 +588,18 @@
       },
       {
         "label": "(hopp,hopp,hopp)->hopper_v",
-        "rel": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments togethe\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out\n",
+        "rel": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments together.\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out\n",
         "source_nodes": {
-          "s2": "hopper_width",
-          "s3": "hopper_depth",
-          "s1": "hopper_y_position"
+          "s1": "hopper_width",
+          "s2": "hopper_depth",
+          "s3": "hopper_y_position"
         },
         "target": "hopper_volume",
         "weight": 1.0
       },
       {
         "label": "(curr,hopp)->material",
-        "rel": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments togethe\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out\n",
+        "rel": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments together.\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out\n",
         "source_nodes": {
           "density": "current_material",
           "volume": "hopper_volume"
@@ -625,7 +625,7 @@
       },
       {
         "label": "(laye)->number_o",
-        "rel": "def Rget_first_count(*args, **kwargs):\n    \"Returns the count of arguments.\"\n    args = extend(args, kwargs)\n    return len(args[0])\n",
+        "rel": "def Rget_first_count(times, **kw):\n    \"Returns the count of the list.\"\n    return len(times)\n",
         "source_nodes": {
           "times": "layer_build_times"
         },
@@ -679,7 +679,7 @@
       },
       {
         "label": "(bed_,buil,time,scan)->scan_sta",
-        "rel": "def Rcalc_fusing_start_time(leveled: bool, progress: float, time: float,\n                            prev_start: float, *ar, **kw)-> bool:\n    \"\"\"Returns the time that fusion began for the current laye\"\"\"\n    if all([leveled, progress < 99.999]):\n        return time\n    return prev_start\n",
+        "rel": "def Rcalc_fusing_start_time(leveled: bool, progress: float, time: float,\n                            prev_start: float, *ar, **kw)-> bool:\n    \"\"\"Returns the time that fusion began for the current layer.\"\"\"\n    if all([leveled, progress < 99.999]):\n        return time\n    return prev_start\n",
         "source_nodes": {
           "leveled": "bed_is_leveled",
           "progress": "build_progress",
@@ -714,7 +714,7 @@
       },
       {
         "label": "(bed_,laye,scan,scan)->scan_end",
-        "rel": "def Rcalc_fusing_end_time(leveled: bool, scan_time: float, start: float,\n                          prev: float, *ar, **kw)-> bool:\n    \"\"\"Returns the time that fusion should end for the current laye\"\"\"\n    if not leveled:\n        return prev\n    return scan_time + start\n",
+        "rel": "def Rcalc_fusing_end_time(leveled: bool, scan_time: float, start: float,\n                          prev: float, *ar, **kw)-> bool:\n    \"\"\"Returns the time that fusion should end for the current layer.\"\"\"\n    if not leveled:\n        return prev\n    return scan_time + start\n",
         "source_nodes": {
           "leveled": "bed_is_leveled",
           "scan_time": "layer_scan_time",
