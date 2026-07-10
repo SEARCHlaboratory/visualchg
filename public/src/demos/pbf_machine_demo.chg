@@ -908,29 +908,102 @@
     ]
   },
   "frames": {
-    "frame0": {
+    "default": {
+      "bed_height": [300.],
+      "bed_is_leveled": [True],
+      "bin_width": [200.],
+      "blade_position": [590.],
+      "blade_home_position": [590.],
+      "blade_end_position": [10.],
+      "blade_height": [50.],
+      "blade_max_velocity": [350.],
+      "blade_is_leveling": [False],
+      "blade_is_returning": [False],
+      "blade_is_clearing": [False],
+      "chamber_width": [610],
+      "chamber_height": [410],
+      "height_tol": [0.01],
+      "hopper_x_position": [400],
+      "hopper_initial_y_position": [-140],
+      "hopper_raising_distance": [1.5],
+      "hopper_width": [200],
+      "laser_is_on": [True],
+      "layer_scan_times": [2.2055757073762825, 2.4300408995316314, 2.8437084684191456, 2.423730981955099, 2.0185889551716167, 2.078105709538992, 2.4794040852432406, 2.619599901860837, 2.705956104193786, 2.6115385907359983, 2.5905443178526832, 2.8593386701479164, 2.2515393485679227, 2.888657489016468, 2.3659577333008586, 2.0720056752856237, 2.886340826462735, 2.2018471322057236, 2.9450455274933898, 2.409839698892655, 2.2068965092649, 2.575540200391147, 2.137795597084847, 2.6044070195668336, 2.779986347974037, 2.9561982166286187, 2.620588058265457, 2.717219527328757, 2.771715360282042, 2.530224021442669],
+      "layers_completed": [0],
+      "material_density": [0.0027],
+      "scan_start_time": [0.0],
+      "plate_x_position": [200],
+      "plate_width": [200],
+      "plate_lowering_distance": [-1],
+      "prev_layer_fused": [True],
+      "timestep": [0.5],
+      "time": [0.0]
+    },
+    "full_run": {
       "blade_position": [
         590.0,
         590.0,
-        590.0
+        590.0,
+        590.0,
+        590.0,
+        590.0,
+        415.0,
+        240.0,
+        65.0,
+        -110.0
       ],
       "blade_velocity": [
         0.0,
-        0.0
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -350.0,
+        -350.0,
+        -350.0,
+        -350.0
       ],
       "blade_is_clearing": [
         false,
         false,
-        false
+        false,
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true
       ],
       "blade_is_leveling": [
         false,
-        false
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true
       ],
       "layer_fused": [
-        false
+        false,
+        false,
+        false,
+        true,
+        true,
+        true,
+        true,
+        true
       ],
       "scan_end_time": [
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
         2.237964627091891,
         2.237964627091891,
         2.237964627091891,
@@ -939,18 +1012,94 @@
       "bed_is_leveled": [
         true,
         false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
         false
       ],
-      "layer_scan_time": [
-        2.237964627091891,
-        2.237964627091891,
-        2.237964627091891
+      "laser_is_on": [
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        false,
+        false,
+        false
       ],
-      "layers_completed": [
-        0,
-        0,
-        0,
-        0
+      "blade_is_returning": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "blade_relative_position": [
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        -0.0,
+        0.3017241379310345,
+        0.603448275862069,
+        0.9051724137931034
+      ],
+      "blade_home_position": [
+        590.0
+      ],
+      "blade_end_position": [
+        10.0
+      ],
+      "scan_start_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "build_progress": [
+        0.0,
+        0.5133611537555054,
+        0.7700417306332581,
+        1.0267223075110108,
+        1.2834028843887635,
+        1.5400834612665162,
+        1.796764038144269,
+        2.0534446150220216,
+        2.3101251918997745
+      ],
+      "time": [
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5,
+        3.0,
+        3.5,
+        4.0,
+        4.5,
+        5.0
+      ],
+      "build_time": [
+        194.79463778754524
       ],
       "layer_scan_times": [
         [
@@ -986,33 +1135,69 @@
           2.878812800255482
         ]
       ],
-      "scan_start_time": [
-        0.0,
-        0.0,
-        0.0,
-        0.0
+      "leveling_time": [
+        3.9771428571428573
       ],
-      "time": [
-        0.0,
-        0.5,
-        1.0,
-        1.5
+      "blade_max_velocity": [
+        350.0
       ],
       "timestep": [
         0.5
       ],
-      "plate_at_fusion_level": [
-        true
+      "layer_scan_time": [
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.5442292252959517,
+        2.5442292252959517,
+        2.5442292252959517,
+        2.5442292252959517
       ],
-      "plate_y_position": [
-        299.0
-      ],
-      "plate_lowering_distance": [
-        -1
+      "layers_completed": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1
       ],
       "layer_just_fused": [
         false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
         false
+      ],
+      "plate_at_fusion_level": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "plate_y_position": [
+        299.0,
+        299.0,
+        298.0,
+        298.0,
+        298.0,
+        298.0
+      ],
+      "plate_lowering_distance": [
+        -1
       ],
       "plate_initial_y_position": [
         299.0
@@ -1024,35 +1209,26 @@
         0.01
       ],
       "hopper_is_raised": [
+        true,
+        true,
+        true,
+        true,
+        true,
         true
       ],
       "hopper_y_position": [
-        -140.0
+        -140.0,
+        -140.0,
+        -138.5,
+        -138.5,
+        -138.5,
+        -138.5
       ],
       "hopper_raising_distance": [
         1.5
       ],
       "hopper_initial_y_position": [
         -140
-      ],
-      "laser_is_on": [
-        true,
-        true
-      ],
-      "blade_is_returning": [
-        false,
-        false,
-        false
-      ],
-      "blade_relative_position": [
-        -0.0,
-        -0.0
-      ],
-      "blade_home_position": [
-        590.0
-      ],
-      "blade_end_position": [
-        10.0
       ]
     }
   }
