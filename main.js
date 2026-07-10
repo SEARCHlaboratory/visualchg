@@ -1645,6 +1645,15 @@ function updatePropertiesPanel() {
 
     document.querySelectorAll('.btn-toggle-relations, #btn-toggle-relations-pane').forEach(btn => {
       btn.onclick = () => {
+        const btnId = btn.id;
+        if (btnId.includes('index-via')) {
+          window.ACTIVE_RELATION_TARGET = 'index_via';
+        } else if (btnId.includes('via')) {
+          window.ACTIVE_RELATION_TARGET = 'via';
+        } else {
+          window.ACTIVE_RELATION_TARGET = 'rel';
+        }
+
         const pane = document.getElementById('relations-pane');
         if (pane) {
           pane.classList.toggle('open');
@@ -2331,7 +2340,8 @@ window.renderRelationsPane = function () {
             const edge = chgData.hypergraph.edges.find(e => e.label === VCHG_ELEMENT_SELECTED);
             if (edge) {
               window.pushHistory();
-              edge.rel = m.source;
+              const targetProp = window.ACTIVE_RELATION_TARGET || 'rel';
+              edge[targetProp] = m.source;
               updatePropertiesPanel();
             }
           }
