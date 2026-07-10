@@ -1229,6 +1229,9 @@ function updatePropertiesPanel() {
     return;
   }
 
+  const advancedSection = content.querySelector('.advanced-section');
+  const isAdvancedOpen = advancedSection ? advancedSection.open : false;
+
   empty.classList.add('hidden');
   content.classList.remove('hidden');
   if (btnDelete) btnDelete.classList.remove('hidden');
@@ -1499,64 +1502,149 @@ function updatePropertiesPanel() {
           <label style="margin-bottom: 2px; font-size: 0.8rem; font-weight: 500; display:flex; align-items:center; gap:6px;">Definition ${getInfoIcon("The relationship that defines how the target node is calculated. This must be written as a Python method following all Python syntax starting with def. The name of the method does not matter, but its parameters should be the keys of the source nodes above.")}</label>
           <textarea class="code-block" id="prop-edge-rule" style="width:100%; box-sizing:border-box;">${edge.rel || ''}</textarea>
         </div>
+        </div>
       </section>
+      <details class="mt-4 advanced-section" ${isAdvancedOpen ? 'open' : ''}>
+        <summary>Advanced</summary>
+
+        <!-- Conditional Viability -->
+        <div class="input-group mt-2">
+          <label class="checkbox-label" style="margin: 0; display:flex; align-items:center; gap:6px;">
+            <input type="checkbox" id="prop-edge-has-via" ${'via' in edge ? 'checked' : ''} /> Conditional Viability
+            ${getInfoIcon("A boolean function that determines whether or not the edge can be used in a simulation based on the values of the source nodes. The default is always viable.")}
+          </label>
+        </div>
+        <div id="prop-edge-via-container" class="mt-2 ${'via' in edge ? '' : 'hidden'}">
+          <div class="input-group" style="margin-bottom: 5px;">
+            <label style="margin-bottom: 2px; font-size: 0.8rem; font-weight: 500; display:flex; align-items:center; gap:6px;">Rule ${getInfoIcon("Select a preexisting relation or write your own.")}</label>
+            <div style="display:grid; grid-template-columns: 1fr 30px; gap: 4px; align-items:center; width:100%;">
+              <select id="prop-edge-via-select" style="width: 100%; min-width:0;">
+                <option value="">-- Custom --</option>
+              </select>
+              <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+                <button id="btn-toggle-via-relations-pane" class="icon-btn text-btn btn-toggle-relations" style="margin: 0; padding: 0; display:flex; align-items:center; justify-content:center;" title="View Current Relations">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="input-group" style="margin-bottom: 0;">
+            <label style="margin-bottom: 2px; font-size: 0.8rem; font-weight: 500; display:flex; align-items:center; gap:6px;">Definition ${getInfoIcon("The relationship that defines how the target node is calculated. This must be written as a Python method following all Python syntax starting with def. The name of the method does not matter, but its parameters should be the keys of the source nodes above.")}</label>
+            <textarea class="code-block" id="prop-edge-via" style="width:100%; box-sizing:border-box;">${edge.via || ''}</textarea>
+          </div>
+        </div>
+
+        <!-- Dynamic Viability -->
+        <div class="input-group mt-2">
+          <label class="checkbox-label" style="margin: 0; display:flex; align-items:center; gap:6px;">
+            <input type="checkbox" id="prop-edge-has-index-via" ${'index_via' in edge ? 'checked' : ''} /> Dynamic Viability
+            ${getInfoIcon("A boolean function that determines what cycle index is valid for the source nodes to be used. The parameters for the function are the keys for the source nodes, but the values used are the nodes' index (which round of a cycle they are on). See more at https://constrainthg.readthedocs.io/en/latest/tutorial/cycles.html")}
+          </label>
+        </div>
+        <div id="prop-edge-index-via-container" class="mt-2 ${'index_via' in edge ? '' : 'hidden'}">
+          <div class="input-group" style="margin-bottom: 5px;">
+            <label style="margin-bottom: 2px; font-size: 0.8rem; font-weight: 500; display:flex; align-items:center; gap:6px;">Rule ${getInfoIcon("Select a preexisting relation or write your own.")}</label>
+            <div style="display:grid; grid-template-columns: 1fr 30px; gap: 4px; align-items:center; width:100%;">
+              <select id="prop-edge-index-via-select" style="width: 100%; min-width:0;">
+                <option value="">-- Custom --</option>
+              </select>
+              <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+                <button id="btn-toggle-index-via-relations-pane" class="icon-btn text-btn btn-toggle-relations" style="margin: 0; padding: 0; display:flex; align-items:center; justify-content:center;" title="View Current Relations">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="input-group" style="margin-bottom: 0;">
+            <label style="margin-bottom: 2px; font-size: 0.8rem; font-weight: 500; display:flex; align-items:center; gap:6px;">Definition ${getInfoIcon("The relationship that defines how the target node is calculated. This must be written as a Python method following all Python syntax starting with def. The name of the method does not matter, but its parameters should be the keys of the source nodes above.")}</label>
+            <textarea class="code-block" id="prop-edge-index-via" style="width:100%; box-sizing:border-box;">${edge.index_via || ''}</textarea>
+          </div>
+        </div>
+
+        <!-- Index Offset -->
+        <div class="input-group inline-row mt-2">
+          <label>Index Offset</label>
+          <div class="input-with-info" style="width: auto; flex: 1; justify-content: flex-end;">
+            <input type="number" id="prop-edge-index-offset" value="${edge.index_offset || 0}" style="width: 60px;" />
+            ${getInfoIcon("Offset to apply to the target once solved for. Akin to iterating to the next level of a cycle.")}
+          </div>
+        </div>
+
+        <!-- Disposable -->
+        <div class="input-group mt-2">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px;">
+            <label style="display:flex; align-items:center; gap:6px; margin:0;">Disposable ${getInfoIcon("A list of source node handles that should not be evaluated for future cyclic executions of the edge.")}</label>
+          </div>
+          <div id="prop-edge-disposable-list" style="padding-left: 10px;">
+            ${Object.keys(edge.source_nodes || {}).map(k => {
+              const checked = edge.disposable && edge.disposable.includes(k) ? 'checked' : '';
+              return `<label class="checkbox-label" style="display:flex; align-items:center; gap:6px; margin-bottom: 4px; font-size:0.8rem;"><input type="checkbox" class="disposable-chk" data-key="${k}" ${checked}> ${k} (${edge.source_nodes[k]})</label>`;
+            }).join('')}
+          </div>
+        </div>
+      </details>
     `;
     content.innerHTML = html;
 
     // Listeners
-    const ruleInput = document.getElementById('prop-edge-rule');
-    const ruleSelect = document.getElementById('prop-edge-rule-select');
-    const togglePaneBtn = document.getElementById('btn-toggle-relations-pane');
 
-    if (ruleSelect && ruleInput) {
-      // Populate select
-      const customMethods = extractMethods();
-      const allMethods = {};
-      Object.keys(STANDARD_RELATIONS).forEach(k => { allMethods[k] = STANDARD_RELATIONS[k].doc; });
-      Object.keys(customMethods).forEach(k => { allMethods[k] = customMethods[k].doc; });
+    // Helper to setup relation fields
+    const setupRelationFields = (propName, inputId, selectId) => {
+      const ruleInput = document.getElementById(inputId);
+      const ruleSelect = document.getElementById(selectId);
+      
+      if (ruleSelect && ruleInput) {
+        const customMethods = extractMethods();
+        const allMethods = {};
+        Object.keys(STANDARD_RELATIONS).forEach(k => { allMethods[k] = STANDARD_RELATIONS[k].doc; });
+        Object.keys(customMethods).forEach(k => { allMethods[k] = customMethods[k].doc; });
 
-      // Determine active method name from textarea
-      let activeMethod = "";
-      const match = (edge.rel || '').match(/def\s+([a-zA-Z_]\w*)\s*\(/);
-      if (match) {
-        activeMethod = match[1];
+        let activeMethod = "";
+        const match = (edge[propName] || '').match(/def\s+([a-zA-Z_]\w*)\s*\(/);
+        if (match) {
+          activeMethod = match[1];
+        }
+
+        Object.keys(allMethods).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).forEach(name => {
+          const option = document.createElement('option');
+          option.value = name;
+          option.textContent = name;
+          if (name === activeMethod) option.selected = true;
+          ruleSelect.appendChild(option);
+        });
+
+        ruleSelect.onchange = (e) => {
+          const selected = e.target.value;
+          if (!selected) return;
+
+          window.pushHistory();
+          let codeSnippet = "";
+          if (STANDARD_RELATIONS[selected]) {
+            codeSnippet = STANDARD_RELATIONS[selected].source;
+          } else if (customMethods[selected]) {
+            codeSnippet = customMethods[selected].source;
+          }
+
+          if (codeSnippet) {
+            ruleInput.value = codeSnippet;
+            edge[propName] = codeSnippet;
+          }
+        };
+
+        ruleInput.onchange = (e) => {
+          window.pushHistory();
+          edge[propName] = e.target.value;
+          updatePropertiesPanel(); 
+        };
       }
+    };
 
-      Object.keys(allMethods).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).forEach(name => {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        if (name === activeMethod) option.selected = true;
-        ruleSelect.appendChild(option);
-      });
+    setupRelationFields('rel', 'prop-edge-rule', 'prop-edge-rule-select');
+    setupRelationFields('via', 'prop-edge-via', 'prop-edge-via-select');
+    setupRelationFields('index_via', 'prop-edge-index-via', 'prop-edge-index-via-select');
 
-      ruleSelect.onchange = (e) => {
-        const selected = e.target.value;
-        if (!selected) return;
-
-        window.pushHistory();
-        let codeSnippet = "";
-        if (STANDARD_RELATIONS[selected]) {
-          codeSnippet = STANDARD_RELATIONS[selected].source;
-        } else if (customMethods[selected]) {
-          codeSnippet = customMethods[selected].source;
-        }
-
-        if (codeSnippet) {
-          ruleInput.value = codeSnippet;
-          edge.rel = codeSnippet;
-        }
-      };
-
-      ruleInput.onchange = (e) => {
-        window.pushHistory();
-        edge.rel = e.target.value;
-        updatePropertiesPanel(); // re-render to update the dropdown options based on the new definition
-      };
-    }
-
-    if (togglePaneBtn) {
-      togglePaneBtn.onclick = () => {
+    document.querySelectorAll('.btn-toggle-relations, #btn-toggle-relations-pane').forEach(btn => {
+      btn.onclick = () => {
         const pane = document.getElementById('relations-pane');
         if (pane) {
           pane.classList.toggle('open');
@@ -1565,7 +1653,50 @@ function updatePropertiesPanel() {
           }
         }
       };
+    });
+
+    // Advanced section listeners
+    const viaChk = document.getElementById('prop-edge-has-via');
+    if (viaChk) {
+      viaChk.onchange = (e) => {
+        window.pushHistory();
+        if (!e.target.checked) delete edge.via;
+        else edge.via = '';
+        updatePropertiesPanel();
+      };
     }
+
+    const indexViaChk = document.getElementById('prop-edge-has-index-via');
+    if (indexViaChk) {
+      indexViaChk.onchange = (e) => {
+        window.pushHistory();
+        if (!e.target.checked) delete edge.index_via;
+        else edge.index_via = '';
+        updatePropertiesPanel();
+      };
+    }
+
+    const offsetInput = document.getElementById('prop-edge-index-offset');
+    if (offsetInput) {
+      offsetInput.onchange = (e) => {
+        window.pushHistory();
+        edge.index_offset = parseInt(e.target.value) || 0;
+      };
+    }
+
+    document.querySelectorAll('.disposable-chk').forEach(chk => {
+      chk.onchange = (e) => {
+        window.pushHistory();
+        const key = e.target.dataset.key;
+        if (!edge.disposable) edge.disposable = [];
+        if (e.target.checked) {
+          if (!edge.disposable.includes(key)) edge.disposable.push(key);
+        } else {
+          edge.disposable = edge.disposable.filter(k => k !== key);
+        }
+        if (edge.disposable.length === 0) delete edge.disposable;
+      };
+    });
 
     document.getElementById('prop-edge-label').onchange = (e) => {
       const newLabel = e.target.value.trim();
@@ -1604,6 +1735,12 @@ function updatePropertiesPanel() {
         window.pushHistory();
         const key = e.target.getAttribute('data-key');
         delete edge.source_nodes[key];
+        
+        if (edge.disposable) {
+          edge.disposable = edge.disposable.filter(k => k !== key);
+          if (edge.disposable.length === 0) delete edge.disposable;
+        }
+
         updatePropertiesPanel();
         renderGraph();
         buildOutline();
@@ -1684,6 +1821,11 @@ function updatePropertiesPanel() {
         if (oldKey !== newKey && newKey) {
           edge.source_nodes[newKey] = edge.source_nodes[oldKey];
           delete edge.source_nodes[oldKey];
+          
+          if (edge.disposable && edge.disposable.includes(oldKey)) {
+            edge.disposable = edge.disposable.filter(k => k !== oldKey);
+            edge.disposable.push(newKey);
+          }
         }
         renderGraph();
         buildOutline();
