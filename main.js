@@ -12,6 +12,142 @@ let VCHG_KIND_SELECTED = null; // 'NODE', 'EDGE', 'PATH', or null
 window.undoStacks = {};
 window.redoStacks = {};
 
+const STANDARD_RELATIONS = {
+  "Rall": {
+    "doc": "Returns true if all arguments are true.",
+    "source": "def Rall(*args, **kwargs):\n    \"\"\"Returns true if all arguments are true.\"\"\"\n    args = extend(args, kwargs)\n    return all(args)"
+  },
+  "Rany": {
+    "doc": "Returns true if any of the arguments are true.",
+    "source": "def Rany(*args, **kwargs):\n    \"\"\"Returns true if any of the arguments are true.\"\"\"\n    args = extend(args, kwargs)\n    return any(args)"
+  },
+  "Rceiling": {
+    "doc": "Returns the ceiling of the first argument",
+    "source": "def Rceiling(*args, **kwargs):\n    \"\"\"Returns the ceiling of the first argument\"\"\"\n    args = extend(args, kwargs)\n    return np.ceil(args[0])"
+  },
+  "Rcos": {
+    "doc": "Returns the cosine of the mean of all arguments.",
+    "source": "def Rcos(*args, **kwargs):\n    \"\"\"Returns the cosine of the mean of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return np.cos(np.mean(args))"
+  },
+  "Rdict": {
+    "doc": "Returns a dictionary with either the keyed argument `key` or the\nfirst argument as the dict key.",
+    "source": "def Rdict(*args, **kwargs):\n    \"\"\"Returns a dictionary with either the keyed argument `key` or the\n    first argument as the dict key.\"\"\"\n    args, kwargs = get_keyword_arguments(args, kwargs, 'key')\n    key = kwargs.get['key', None]\n    if key is None:\n        key = args.pop[-1]\n    if len(args) == 1:\n        out = {key: args[0]}\n    else:\n        out = {key: args}\n    return out"
+  },
+  "Rdivide": {
+    "doc": "Divides `s1` by all other arguments.",
+    "source": "def Rdivide(*args, **kwargs):\n    \"\"\"Divides `s1` by all other arguments.\"\"\"\n    args, kwargs = get_keyword_arguments(args, kwargs, 's1')\n    s1 = kwargs['s1']\n    for s in args:\n        s1 /= s\n    return s1"
+  },
+  "Rfirst": {
+    "doc": "Returns the first argument.",
+    "source": "def Rfirst(*args, **kwargs):\n    \"\"\"Returns the first argument.\"\"\"\n    args, kwargs = get_keyword_arguments(args, kwargs, 's1')\n    return kwargs['s1']"
+  },
+  "Rfloor": {
+    "doc": "Returns the floor of the first argument",
+    "source": "def Rfloor(*args, **kwargs):\n    \"\"\"Returns the floor of the first argument\"\"\"\n    args = extend(args, kwargs)\n    return np.floor(args[0])"
+  },
+  "Rfloor_divide": {
+    "doc": "Returns the largest integer smaller or equal to the division of\ns1 and s2.",
+    "source": "def Rfloor_divide(*args, **kwargs):\n    \"\"\"Returns the largest integer smaller or equal to the division of\n    s1 and s2.\"\"\"\n    args, kwargs = get_keyword_arguments(args, kwargs, ['s1', 's2'])\n    return kwargs['s1'] // kwargs['s2']"
+  },
+  "Rincrement": {
+    "doc": "Increments the maximum source by 1.",
+    "source": "def Rincrement(*args, **kwargs):\n    \"\"\"Increments the maximum source by 1.\"\"\"\n    args = extend(args, kwargs)\n    return max(args) + 1"
+  },
+  "Rinvert": {
+    "doc": "Inverts the first argument.",
+    "source": "def Rinvert(*args, **kwargs):\n    \"\"\"Inverts the first argument.\"\"\"\n    args = extend(args, kwargs)\n    return 1 / args[0]"
+  },
+  "Rmax": {
+    "doc": "Returns the maximum of all arguments.",
+    "source": "def Rmax(*args, **kwargs):\n    \"\"\"Returns the maximum of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return max(args)"
+  },
+  "Rmean": {
+    "doc": "Returns the mean of all arguments.",
+    "source": "def Rmean(*args, **kwargs):\n    \"\"\"Returns the mean of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return np.mean(args)"
+  },
+  "Rmin": {
+    "doc": "Returns the minimum of all arguments.",
+    "source": "def Rmin(*args, **kwargs):\n    \"\"\"Returns the minimum of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return min(args)"
+  },
+  "Rmultiply": {
+    "doc": "Multiplies all arguments together.",
+    "source": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments together.\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out"
+  },
+  "Rnegate": {
+    "doc": "Returns the negative of the first argument.",
+    "source": "def Rnegate(*args, **kwargs):\n    \"\"\"Returns the negative of the first argument.\"\"\"\n    args = extend(args, kwargs)\n    return -args[0]"
+  },
+  "Rnot": {
+    "doc": "Returns the logical negation of the first boolean argument.",
+    "source": "def Rnot(*args, **kwargs):\n    \"\"\"Returns the logical negation of the first boolean argument.\"\"\"\n    args = extend(args, kwargs)\n    for a in args:\n        if isinstance(a, bool):\n            return not a\n    return not args[0]"
+  },
+  "Rnot_any": {
+    "doc": "Returns true if none of the arguments are true.",
+    "source": "def Rnot_any(*args, **kwargs):\n    \"\"\"Returns true if none of the arguments are true.\"\"\"\n    args = extend(args, kwargs)\n    return not any(args)"
+  },
+  "Rnull": {
+    "doc": "Returns zero.",
+    "source": "def Rnull(*args, **kwargs):\n    \"\"\"Returns zero.\"\"\"\n    return 0"
+  },
+  "Rsame": {
+    "doc": "Returns true if all arguments are equivalent.",
+    "source": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1"
+  },
+  "Rsin": {
+    "doc": "Returns the sine of the mean of all arguments.",
+    "source": "def Rsin(*args, **kwargs):\n    \"\"\"Returns the sine of the mean of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return np.sin(np.mean(args))"
+  },
+  "Rsubtract": {
+    "doc": "Subtracts from `s1` all other arguments.",
+    "source": "def Rsubtract(*args, **kwargs):\n    \"\"\"Subtracts from `s1` all other arguments.\"\"\"\n    args, kwargs = get_keyword_arguments(args, kwargs, 's1')\n    return kwargs['s1'] - sum(args)"
+  },
+  "Rsum": {
+    "doc": "Sums all arguments.",
+    "source": "def Rsum(*args, **kwargs):\n    \"\"\"Sums all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return sum(args)"
+  },
+  "Rtan": {
+    "doc": "Returns the tangent of the mean of all arguments.",
+    "source": "def Rtan(*args, **kwargs):\n    \"\"\"Returns the tangent of the mean of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return np.tan(np.mean(args))"
+  },
+  "Rxor": {
+    "doc": "Returns true if only one of the arguments is true.",
+    "source": "def Rxor(*args, **kwargs):\n    \"\"\"Returns true if only one of the arguments is true.\"\"\"\n    args = [a for a in extend(args, kwargs) if isinstance(a, bool)]\n    return sum(args) == 1"
+  }
+};
+
+function extractMethods() {
+  const methods = {};
+
+  // Look at currently edited code block if it exists
+  const propEdgeRule = document.getElementById('prop-edge-rule');
+  if (propEdgeRule) {
+    parseStr(propEdgeRule.value);
+  }
+
+  if (!chgData || !chgData.hypergraph || !chgData.hypergraph.edges) return methods;
+
+  function parseStr(str) {
+    if (!str) return;
+    const match = str.match(/def\s+([a-zA-Z_]\w*)\s*\(/);
+    if (match) {
+      const name = match[1];
+      const docMatch = str.match(/\"\"\"([\s\S]*?)\"\"\"/);
+      methods[name] = {
+        source: str,
+        doc: docMatch ? docMatch[1].trim() : ""
+      };
+    }
+  }
+
+  chgData.hypergraph.edges.forEach(edge => {
+    parseStr(edge.rel);
+    parseStr(edge.via);
+    parseStr(edge.index_via);
+  });
+
+  return methods;
+}
+
 window.updateHistoryUI = function () {
   const btnUndo = document.getElementById('btn-undo');
   const btnRedo = document.getElementById('btn-redo');
@@ -321,6 +457,7 @@ function setupTabs() {
     btn.addEventListener('click', (e) => {
       const targetId = e.target.getAttribute('data-target');
       if (targetId) {
+        if (window.closeRelationsPane) window.closeRelationsPane();
         const panel = e.target.closest('.panel');
         if (panel) {
           panel.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -453,11 +590,11 @@ function setupResizers() {
 
 window.currentLayoutName = 'grid';
 
-window.runCurrentLayout = function() {
+window.runCurrentLayout = function () {
   if (!cy) return;
   const spacingSlider = document.getElementById('layout-spacing-slider');
   const spacingVal = spacingSlider ? parseFloat(spacingSlider.value) : (window.currentLayoutName === 'concentric' ? 1.5 : 0.75);
-  
+
   const layoutOptions = {
     name: window.currentLayoutName,
     animate: true,
@@ -782,7 +919,7 @@ async function populateDemos() {
   const selectDemo = document.getElementById('select-demo');
   if (!selectDemo) return;
 
-  const demoModules = import.meta.glob('/demos/*.chg', { query: '?raw', import: 'default' });
+  const demoModules = import.meta.glob('/src/demos/*.chg', { query: '?raw', import: 'default' });
 
   for (const path in demoModules) {
     try {
@@ -1014,6 +1151,8 @@ function selectEntity(label, kind, doFocus = false) {
     VCHG_KIND_SELECTED = null;
   }
 
+  if (window.closeRelationsPane) window.closeRelationsPane();
+
   // Update Selection Visuals
   cy.elements().unselect().removeClass('hidden-node');
   document.querySelectorAll('.tree-item').forEach(el => el.classList.remove('selected'));
@@ -1137,32 +1276,28 @@ function updatePropertiesPanel() {
 
     html = `
       <div class="input-group">
-        <label>Label</label>
-        <div class="input-with-info">
-          <input type="text" id="prop-node-label" value="${node.label}" />
-          ${getInfoIcon("A unique identifier (name) for the node.")}
-        </div>
+        <label style="display:flex; align-items:center; gap:6px;">Label ${getInfoIcon("A unique identifier (name) for the node.")}</label>
+        <input type="text" id="prop-node-label" value="${node.label}" style="width:100%; box-sizing:border-box;" />
       </div>
       <div class="input-group">
-        <label>Value <i>(frame: ${currentFrame})</i></label>
-        <div class="value-input-wrapper input-with-info">
-          ${inputBoxHtml}
-          <button id="btn-apply-sim" class="icon-btn hidden" title="Apply simulated value" style="color: #22c55e; flex-shrink: 0;">
+        <label style="display:flex; align-items:center; gap:6px;">Value <i>(frame: ${currentFrame})</i> ${getInfoIcon(valueTooltip)}</label>
+        <div class="value-input-wrapper" style="display:flex; align-items:center; width:100%; gap:8px;">
+          <div style="flex:1; min-width:0;">
+            ${inputBoxHtml}
+          </div>
+          <button id="btn-apply-sim" class="icon-btn hidden" title="Apply simulated value" style="color: #22c55e; flex-shrink: 0; display:flex; align-items:center; justify-content:center;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
           </button>
-          ${getInfoIcon(valueTooltip)}
         </div>
         ${indexHtml}
       </div>
       <div class="input-group mt-2">
-        <div class="input-with-info">
-          <label class="checkbox-label" style="margin: 0; flex: 1;">
-            <input type="checkbox" id="prop-node-const" ${node.is_constant ? 'checked' : ''} /> Constant
-          </label>
+        <label class="checkbox-label" style="margin: 0; display:flex; align-items:center; gap:6px;">
+          <input type="checkbox" id="prop-node-const" ${node.is_constant ? 'checked' : ''} /> Constant
           ${getInfoIcon("If true, the node's value is fixed and will not be overwritten by the solver.")}
-        </div>
+        </label>
       </div>
     `;
     content.innerHTML = html;
@@ -1303,7 +1438,9 @@ function updatePropertiesPanel() {
               <input type="text" class="autocomplete-input src-val ${isInvalid ? 'invalid-input' : ''}" value="${val}" title="${tooltipStr}" />
             </div>
             <input type="text" class="src-key" value="${key}" title="Key" />
-            <button class="icon-btn danger btn-del-source" style="padding: 0; color: var(--danger-btn); font-size: 1.2rem; display: flex; align-items: center; justify-content: center; height: 100%;" data-key="${key}">✕</button>
+            <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+              <button class="icon-btn danger btn-del-source" style="padding: 0; margin: 0; color: var(--danger-btn); font-size: 1.2rem; display: flex; align-items: center; justify-content: center;" data-key="${key}">✕</button>
+            </div>
           </div>
         `;
       });
@@ -1311,58 +1448,122 @@ function updatePropertiesPanel() {
 
     html = `
       <div class="input-group">
-        <label>Label</label>
-        <div class="input-with-info">
-          <input type="text" id="prop-edge-label" value="${edge.label}" />
-          ${getInfoIcon("A unique identifier (name) for the edge.")}
-        </div>
+        <label style="display:flex; align-items:center; gap:6px;">Label ${getInfoIcon("A unique identifier (name) for the edge.")}</label>
+        <input type="text" id="prop-edge-label" value="${edge.label}" style="width:100%; box-sizing:border-box;" />
       </div>
       <div class="input-group">
-        <label>Weight</label>
-        <div class="input-with-info">
-          <input type="number" id="prop-edge-weight" value="${edge.weight || 0}" />
-          ${getInfoIcon("The traversal cost associated with evaluating this edge.")}
-        </div>
+        <label style="display:flex; align-items:center; gap:6px;">Weight ${getInfoIcon("The traversal cost associated with evaluating this edge.")}</label>
+        <input type="number" id="prop-edge-weight" value="${edge.weight || 0}" style="width:100%; box-sizing:border-box;" />
       </div>
-      <div class="input-group">
-        <label>Target</label>
-        <div class="input-with-info">
-          <div class="autocomplete-wrapper">
+      <section style="margin-bottom: 10px; margin-top: 15px;">
+        <h3 style="margin-bottom: 5px;">Node Connections</h3>
+        <div class="input-group">
+          <label style="display:flex; align-items:center; gap:6px;">Target ${getInfoIcon("The node whose value is resolved by this edge's relationship.")}</label>
+          <div class="autocomplete-wrapper" style="width:100%;">
             <input type="text" class="autocomplete-hint" id="prop-edge-target-hint" disabled />
             <input type="text" class="autocomplete-input ${(edge.target && !validNodeLabels.has(edge.target)) ? 'invalid-input' : ''}" id="prop-edge-target" value="${edge.target || ''}" title="${(edge.target && !validNodeLabels.has(edge.target)) ? 'Node not found in hypergraph.' : ''}" />
           </div>
-          ${getInfoIcon("The node whose value is resolved by this edge's relationship.")}
         </div>
-      </div>
-      <div class="input-group">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <label>Sources</label>
-          <div style="display: flex; align-items: center;">
-            <button id="btn-add-source" class="icon-btn text-btn" style="font-size:1.2rem; margin:0">+</button>
-            ${getInfoIcon("The required input nodes for this edge.")}
+        <div class="input-group">
+          <div style="display:grid; grid-template-columns: 1fr 30px; gap: 4px; align-items:center; margin-bottom: 4px;">
+            <label style="display:flex; align-items:center; gap:6px; margin:0;">Sources ${getInfoIcon("The required input nodes for this edge.")}</label>
+            <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+              <button id="btn-add-source" class="icon-btn text-btn" style="font-size:1.2rem; margin:0; padding:0; display:flex; align-items:center; justify-content:center;">+</button>
+            </div>
+          </div>
+          <div class="source-grid" style="font-weight:600; font-size:0.8rem">
+            <div>Label</div><div>Key</div><div></div>
+          </div>
+          ${sourcesHtml}
+        </div>
+      </section>
+      <section style="margin-bottom: 10px;">
+        <h3 style="margin-bottom: 5px;">Relation</h3>
+        <div class="input-group" style="margin-bottom: 5px;">
+          <label style="margin-bottom: 2px; font-size: 0.8rem; font-weight: 500; display:flex; align-items:center; gap:6px;">Rule ${getInfoIcon("Select a preexisting relation or write your own.")}</label>
+          <div style="display:grid; grid-template-columns: 1fr 30px; gap: 4px; align-items:center; width:100%;">
+            <select id="prop-edge-rule-select" style="width: 100%; min-width:0;">
+              <option value="">-- Custom --</option>
+            </select>
+            <div style="display:flex; align-items:center; justify-content:center; height:100%;">
+              <button id="btn-toggle-relations-pane" class="icon-btn text-btn" style="margin: 0; padding: 0; display:flex; align-items:center; justify-content:center;" title="View Current Relations">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
-        <div class="source-grid" style="font-weight:600; font-size:0.8rem">
-          <div>Label</div><div>Key</div><div></div>
+        <div class="input-group" style="margin-bottom: 0;">
+          <label style="margin-bottom: 2px; font-size: 0.8rem; font-weight: 500; display:flex; align-items:center; gap:6px;">Definition ${getInfoIcon("The relationship that defines how the target node is calculated. This must be written as a Python method following all Python syntax starting with def. The name of the method does not matter, but its parameters should be the keys of the source nodes above.")}</label>
+          <textarea class="code-block" id="prop-edge-rule" style="width:100%; box-sizing:border-box;">${edge.rel || ''}</textarea>
         </div>
-        ${sourcesHtml}
-      </div>
-      <div class="input-group">
-        <label>Rule</label>
-        <div class="input-with-info" style="align-items: flex-start;">
-          <textarea class="code-block" id="prop-edge-rule">${edge.rel || ''}</textarea>
-          ${getInfoIcon("The relationship that defines how the target node is calculated. This must be written as a Python method following all Python syntax starting with def. The name of the method does not matter, but its parameters should be the keys of the source nodes above.")}
-        </div>
-      </div>
+      </section>
     `;
     content.innerHTML = html;
 
     // Listeners
     const ruleInput = document.getElementById('prop-edge-rule');
-    if (ruleInput) {
+    const ruleSelect = document.getElementById('prop-edge-rule-select');
+    const togglePaneBtn = document.getElementById('btn-toggle-relations-pane');
+
+    if (ruleSelect && ruleInput) {
+      // Populate select
+      const customMethods = extractMethods();
+      const allMethods = {};
+      Object.keys(STANDARD_RELATIONS).forEach(k => { allMethods[k] = STANDARD_RELATIONS[k].doc; });
+      Object.keys(customMethods).forEach(k => { allMethods[k] = customMethods[k].doc; });
+
+      // Determine active method name from textarea
+      let activeMethod = "";
+      const match = (edge.rel || '').match(/def\s+([a-zA-Z_]\w*)\s*\(/);
+      if (match) {
+        activeMethod = match[1];
+      }
+
+      Object.keys(allMethods).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).forEach(name => {
+        const option = document.createElement('option');
+        option.value = name;
+        option.textContent = name;
+        if (name === activeMethod) option.selected = true;
+        ruleSelect.appendChild(option);
+      });
+
+      ruleSelect.onchange = (e) => {
+        const selected = e.target.value;
+        if (!selected) return;
+
+        window.pushHistory();
+        let codeSnippet = "";
+        if (STANDARD_RELATIONS[selected]) {
+          codeSnippet = STANDARD_RELATIONS[selected].source;
+        } else if (customMethods[selected]) {
+          codeSnippet = customMethods[selected].source;
+        }
+
+        if (codeSnippet) {
+          ruleInput.value = codeSnippet;
+          edge.rel = codeSnippet;
+        }
+      };
+
       ruleInput.onchange = (e) => {
         window.pushHistory();
         edge.rel = e.target.value;
+        updatePropertiesPanel(); // re-render to update the dropdown options based on the new definition
+      };
+    }
+
+    if (togglePaneBtn) {
+      togglePaneBtn.onclick = () => {
+        const pane = document.getElementById('relations-pane');
+        if (pane) {
+          pane.classList.toggle('open');
+          if (pane.classList.contains('open')) {
+            renderRelationsPane();
+          }
+        }
       };
     }
 
@@ -1404,6 +1605,8 @@ function updatePropertiesPanel() {
         const key = e.target.getAttribute('data-key');
         delete edge.source_nodes[key];
         updatePropertiesPanel();
+        renderGraph();
+        buildOutline();
       };
     });
 
@@ -1676,6 +1879,17 @@ function setupSimulateControls() {
       return;
     }
 
+    const terminalPanel = document.getElementById('terminal-panel');
+    const termBtn = document.getElementById('btn-toggle-terminal');
+    if (terminalPanel && !terminalPanel.classList.contains('open')) {
+      terminalPanel.classList.add('open');
+      if (termBtn) {
+        termBtn.classList.remove('flash');
+        termBtn.title = 'Close terminal';
+      }
+    }
+
+
     logOutput(`Starting simulation for target node: ${VCHG_ELEMENT_SELECTED}...`);
 
     // Gather params
@@ -1827,3 +2041,174 @@ function attachAutocomplete(inputEl, hintEl, edgeContext = null) {
     }
   });
 }
+window.closeRelationsPane = function () {
+  const pane = document.getElementById('relations-pane');
+  if (pane) {
+    pane.classList.remove('open');
+  }
+  document.querySelectorAll('.tree-item.highlighted').forEach(item => item.classList.remove('highlighted'));
+};
+
+// Add Relations Pane rendering
+window.renderRelationsPane = function () {
+  const listEl = document.getElementById('relation-list');
+  const searchEl = document.getElementById('relation-search');
+  if (!listEl || !searchEl) return;
+
+  const customMethods = extractMethods();
+
+  const activeMethods = [];
+  Object.keys(customMethods).forEach(name => {
+    activeMethods.push({
+      name,
+      doc: customMethods[name].doc || (STANDARD_RELATIONS[name] ? STANDARD_RELATIONS[name].doc : ''),
+      isStandard: !!STANDARD_RELATIONS[name],
+      source: customMethods[name].source
+    });
+  });
+  activeMethods.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+  const standardMethods = [];
+  Object.keys(STANDARD_RELATIONS).forEach(name => {
+    standardMethods.push({
+      name,
+      doc: STANDARD_RELATIONS[name].doc,
+      isStandard: true,
+      source: STANDARD_RELATIONS[name].source
+    });
+  });
+  standardMethods.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+  const renderList = (query) => {
+    listEl.innerHTML = '';
+    const q = query.toLowerCase();
+
+    const createSection = (title, methods, defaultOpen) => {
+      const filtered = methods.filter(m => {
+        if (!q) return true;
+        return m.name.toLowerCase().includes(q) || (m.doc && m.doc.toLowerCase().includes(q));
+      });
+
+      if (filtered.length === 0) return;
+
+      const details = document.createElement('details');
+      details.className = 'relation-section';
+      if (defaultOpen || q) details.open = true;
+
+      const summary = document.createElement('summary');
+      summary.className = 'relation-section-title';
+      summary.innerHTML = `<span style="font-size:0.8rem; text-transform:uppercase; font-weight:600; opacity:0.7;">${title}</span> <span style="font-size:0.75rem; opacity:0.5;">(${filtered.length})</span>`;
+      summary.style.cursor = 'pointer';
+      summary.style.padding = '8px 4px';
+      summary.style.userSelect = 'none';
+      summary.style.outline = 'none';
+      details.appendChild(summary);
+
+      const ul = document.createElement('ul');
+      ul.style.listStyle = 'none';
+      ul.style.padding = '0';
+      ul.style.margin = '0 0 10px 0';
+
+      filtered.forEach(m => {
+        const li = document.createElement('li');
+        li.className = 'relation-item';
+
+        const header = document.createElement('div');
+        header.className = 'relation-item-header';
+
+        const nameGroup = document.createElement('div');
+        nameGroup.className = 'relation-name-group';
+
+        const arrow = document.createElement('span');
+        arrow.className = 'relation-arrow';
+        arrow.innerHTML = '▶';
+
+        const nameEl = document.createElement('span');
+        nameEl.className = `relation-name ${m.isStandard ? 'standard' : 'custom'}`;
+        nameEl.textContent = m.name;
+
+        nameGroup.appendChild(arrow);
+        nameGroup.appendChild(nameEl);
+
+        header.appendChild(nameGroup);
+
+        if (m.isStandard) {
+          const tag = document.createElement('span');
+          tag.className = 'relation-tag';
+          tag.textContent = 'standard';
+          header.appendChild(tag);
+        }
+
+        li.appendChild(header);
+
+        const body = document.createElement('div');
+        body.className = 'relation-body';
+
+        if (m.doc) {
+          const desc = document.createElement('div');
+          desc.className = 'relation-desc';
+          desc.textContent = m.doc;
+          body.appendChild(desc);
+        }
+
+        const code = document.createElement('div');
+        code.className = 'relation-code';
+        code.textContent = m.source;
+        body.appendChild(code);
+
+        li.appendChild(body);
+
+        // Interactions
+        header.onclick = (e) => {
+          if (e.detail === 2) return; // Prevent toggle on double click
+
+          const wasOpen = li.classList.contains('open');
+
+          // Close all other items and remove highlights
+          document.querySelectorAll('.relation-item').forEach(item => item.classList.remove('open'));
+          document.querySelectorAll('.tree-item.highlighted').forEach(item => item.classList.remove('highlighted'));
+
+          if (!wasOpen) {
+            li.classList.add('open');
+            // Highlight edges using this relation
+            if (chgData && chgData.hypergraph && chgData.hypergraph.edges) {
+              chgData.hypergraph.edges.forEach(edge => {
+                // simple check if the source matches exactly, or if the relation contains the method name
+                // Usually edge.rel matches the source exactly or calls the method.
+                if (edge.rel && edge.rel.includes(`def ${m.name}(`)) {
+                  const treeEl = document.querySelector(`.tree-item[data-label="${edge.label}"][data-kind="EDGE"]`);
+                  if (treeEl) treeEl.classList.add('highlighted');
+                }
+              });
+            }
+          }
+        };
+
+        li.ondblclick = (e) => {
+          if (VCHG_KIND_SELECTED === 'EDGE' && VCHG_ELEMENT_SELECTED && chgData) {
+            const edge = chgData.hypergraph.edges.find(e => e.label === VCHG_ELEMENT_SELECTED);
+            if (edge) {
+              window.pushHistory();
+              edge.rel = m.source;
+              updatePropertiesPanel();
+            }
+          }
+        };
+
+        ul.appendChild(li);
+      });
+
+      details.appendChild(ul);
+      listEl.appendChild(details);
+    };
+
+    createSection("Active", activeMethods, true);
+    createSection("Standard", standardMethods, false);
+  };
+
+  renderList(searchEl.value);
+
+  searchEl.oninput = (e) => {
+    renderList(e.target.value);
+  };
+};

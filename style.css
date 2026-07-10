@@ -556,6 +556,11 @@ section {
   font-weight: 600;
 }
 
+.tree-item.highlighted {
+  background-color: rgba(59, 130, 246, 0.2);
+  border-left: 2px solid var(--primary-btn);
+}
+
 .tree-children {
   padding-left: 20px;
 }
@@ -1139,4 +1144,133 @@ section {
 
 .sidebar-links a:hover {
   color: var(--text-primary);
+}
+
+/* Relations Pane */
+.relations-pane {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 350px;
+  background-color: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-right: 1px solid var(--border-color);
+  z-index: 50;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.relations-pane.open {
+  transform: translateX(0);
+  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+}
+
+.relations-pane-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 12px 12px 12px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 10px;
+}
+
+.relations-pane-header h3 {
+  margin: 0;
+  padding: 0;
+}
+
+.relation-list {
+  list-style: none;
+  overflow-y: auto;
+  flex-grow: 1;
+  padding: 0 10px 20px 10px;
+}
+
+.relation-item {
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  background: var(--hover-bg);
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  cursor: pointer;
+  user-select: none;
+}
+
+.relation-item:hover {
+  background: var(--active-bg);
+  border-color: var(--border-color);
+}
+
+.relation-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.relation-name-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.relation-arrow {
+  font-size: 10px;
+  opacity: 0.5;
+  transition: transform 0.2s;
+}
+
+.relation-item.open .relation-arrow {
+  transform: rotate(90deg);
+}
+
+.relation-name {
+  font-family: monospace;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.relation-name.standard {
+  color: var(--text-color);
+}
+
+.relation-name.custom {
+  color: #3b82f6; /* Blue for custom methods */
+}
+
+.relation-tag {
+  font-size: 0.75rem;
+  font-style: italic;
+  opacity: 0.6;
+}
+
+.relation-body {
+  display: none;
+  margin-top: 8px;
+  padding-left: 16px;
+  font-size: 0.8rem;
+  opacity: 0.8;
+  border-left: 2px solid var(--border-color);
+}
+
+.relation-item.open .relation-body {
+  display: block;
+}
+
+.relation-desc {
+  margin-bottom: 6px;
+  white-space: pre-wrap;
+}
+
+.relation-code {
+  font-family: monospace;
+  background: rgba(0,0,0,0.05);
+  padding: 4px;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  word-break: break-all;
 }

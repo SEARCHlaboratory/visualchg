@@ -1,4 +1,4 @@
-{
+const n=`{
   "hypergraph": {
     "name": "Pendulum Demo",
     "no_weights": false,
@@ -75,7 +75,7 @@
     "edges": [
       {
         "label": "theta0->theta",
-        "rel": "def Rmean(*args, **kwargs):\n    \"\"\"Returns the mean of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return np.mean(args)\n",
+        "rel": "def Rmean(*args, **kwargs):\\n    \\"\\"\\"Returns the mean of all arguments.\\"\\"\\"\\n    args = extend(args, kwargs)\\n    return np.mean(args)\\n",
         "source_nodes": {
           "s1": "theta0"
         },
@@ -84,7 +84,7 @@
       },
       {
         "label": "omega0->omega",
-        "rel": "def Rmean(*args, **kwargs):\n    \"\"\"Returns the mean of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return np.mean(args)\n",
+        "rel": "def Rmean(*args, **kwargs):\\n    \\"\\"\\"Returns the mean of all arguments.\\"\\"\\"\\n    args = extend(args, kwargs)\\n    return np.mean(args)\\n",
         "source_nodes": {
           "s1": "omega0"
         },
@@ -93,7 +93,7 @@
       },
       {
         "label": "(g,r)->b1",
-        "rel": "def Rdivide(*args, **kwargs):\n    \"\"\"Divides `s1` by all other arguments.\"\"\"\n    args, kwargs = get_keyword_arguments(args, kwargs, 's1')\n    s1 = kwargs['s1']\n    for s in args:\n        s1 /= s\n    return s1\n",
+        "rel": "def Rdivide(*args, **kwargs):\\n    \\"\\"\\"Divides \`s1\` by all other arguments.\\"\\"\\"\\n    args, kwargs = get_keyword_arguments(args, kwargs, 's1')\\n    s1 = kwargs['s1']\\n    for s in args:\\n        s1 /= s\\n    return s1\\n",
         "source_nodes": {
           "s1": "gravity",
           "s2": "radius"
@@ -103,7 +103,7 @@
       },
       {
         "label": "theta->sine",
-        "rel": "def Rsin(*args, **kwargs):\n    \"\"\"Returns the sine of the mean of all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return np.sin(np.mean(args))\n",
+        "rel": "def Rsin(*args, **kwargs):\\n    \\"\\"\\"Returns the sine of the mean of all arguments.\\"\\"\\"\\n    args = extend(args, kwargs)\\n    return np.sin(np.mean(args))\\n",
         "source_nodes": {
           "s1": "theta"
         },
@@ -112,7 +112,7 @@
       },
       {
         "label": "(sine, b1)->F",
-        "rel": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments together.\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out\n",
+        "rel": "def Rmultiply(*args, **kwargs):\\n    \\"\\"\\"Multiplies all arguments together.\\"\\"\\"\\n    args = extend(args, kwargs)\\n    out = 1\\n    for s in args:\\n        out *= s\\n    return out\\n",
         "source_nodes": {
           "s_theta": "sine theta",
           "g/r": "g/r"
@@ -125,7 +125,7 @@
       },
       {
         "label": "(omega, c)->b2",
-        "rel": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments together.\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out\n",
+        "rel": "def Rmultiply(*args, **kwargs):\\n    \\"\\"\\"Multiplies all arguments together.\\"\\"\\"\\n    args = extend(args, kwargs)\\n    out = 1\\n    for s in args:\\n        out *= s\\n    return out\\n",
         "source_nodes": {
           "omega": "omega",
           "c": "damping coeff"
@@ -151,7 +151,7 @@
       },
       {
         "label": "(alpha, omega, time_step)->omega",
-        "rel": "def Rintegrate(step, slope, initial_val):\n    \"\"\"First order Eulerian integrator.\"\"\"\n    return step * slope + initial_val\n",
+        "rel": "def Rintegrate(step, slope, initial_val):\\n    \\"\\"\\"First order Eulerian integrator.\\"\\"\\"\\n    return step * slope + initial_val\\n",
         "source_nodes": {
           "slope": "alpha",
           "initial_val": "omega",
@@ -159,7 +159,7 @@
         },
         "target": "omega",
         "weight": 1.0,
-        "index_via": "def iv(slope, initial_val):\n    return slope - 1 == initial_val",
+        "index_via": "def iv(slope, initial_val):\\n    return slope - 1 == initial_val",
         "disposable": [
           "slope",
           "intial_val"
@@ -167,7 +167,7 @@
       },
       {
         "label": "(omega, theta, time_step)->theta",
-        "rel": "def Rintegrate(step, slope, initial_val):\n    \"\"\"First order Eulerian integrator.\"\"\"\n    return step * slope + initial_val\n",
+        "rel": "def Rintegrate(step, slope, initial_val):\\n    \\"\\"\\"First order Eulerian integrator.\\"\\"\\"\\n    return step * slope + initial_val\\n",
         "source_nodes": {
           "slope": "omega",
           "initial_val": "theta",
@@ -175,7 +175,7 @@
         },
         "target": "theta",
         "weight": 1.0,
-        "index_via": "def iv(slope, initial_val):\n    return slope - 1 == initial_val",
+        "index_via": "def iv(slope, initial_val):\\n    return slope - 1 == initial_val",
         "disposable": [
           "slope",
           "intial_val"
@@ -183,7 +183,7 @@
       },
       {
         "label": "(time,step)->time",
-        "rel": "def Rsum(*args, **kwargs):\n    \"\"\"Sums all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return sum(args)\n",
+        "rel": "def Rsum(*args, **kwargs):\\n    \\"\\"\\"Sums all arguments.\\"\\"\\"\\n    args = extend(args, kwargs)\\n    return sum(args)\\n",
         "source_nodes": {
           "time": "time",
           "step": "time_step"
@@ -197,7 +197,7 @@
       },
       {
         "label": "calc_resting_theta",
-        "rel": "def check_threshold(s1, s2):\n   return max(abs(s1), abs(s2)) < .05",
+        "rel": "def check_threshold(s1, s2):\\n   return max(abs(s1), abs(s2)) < .05",
         "source_nodes": {
           "s1": "theta",
           "s2": "omega",
@@ -222,11 +222,11 @@
   },
   "frames": {
     "simple": {
-      "theta0": 0.5,
-      "gravity": 10,
-      "radius": 1,
-      "omega0": 0,
-      "time_step": 0.01
+      "theta0": [0.5],
+      "gravity": [10],
+      "radius": [1],
+      "omega0": [0],
+      "time_step": [0.01]
     },
     "fullrun": {
       "theta": [
@@ -756,4 +756,4 @@
       ]
     }
   }
-}
+}`;export{n as default};

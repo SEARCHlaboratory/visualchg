@@ -222,11 +222,11 @@
   },
   "frames": {
     "simple": {
-      "theta0": 0.5,
-      "gravity": 10,
-      "radius": 1,
-      "omega0": 0,
-      "time_step": 0.01
+      "theta0": [0.5],
+      "gravity": [10],
+      "radius": [1],
+      "omega0": [0],
+      "time_step": [0.01]
     },
     "fullrun": {
       "theta": [

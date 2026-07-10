@@ -10,13 +10,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="/assets/VisualCHG%20Icon-B2L63bhf.ico" />
+  <link rel="icon" href="/media/VisualCHG Icon.ico" />
 
   <!-- PyScript (includes Pyodide) -->
   <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
   <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
-  <script type="module" crossorigin src="/assets/index-BnOsRsmB.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-DUg5gQlp.css">
+  <script type="module" crossorigin src="/assets/index-DcjaN8zw.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-BECZ3q9t.css">
 </head>
 
 <body>
@@ -55,7 +55,7 @@
             <polyline points="18 17 13 12 18 7"></polyline>
           </svg>
         </button>
-        <button class="tab-btn active" data-target="tab-edit">Edit</button>
+        <button class="tab-btn active" data-target="tab-edit">File</button>
         <button class="tab-btn" data-target="tab-properties">Info</button>
       </div>
 
@@ -63,7 +63,7 @@
         <!-- Edit Tab -->
         <div id="tab-edit" class="tab-pane active">
           <section>
-            <h3>File <svg class="info-icon"
+            <h3>Hypergraph<svg class="info-icon"
                 data-info="The file describing the hypergraph (with a .chg extension). You can create a new file by adding nodes and edges (at right) or upload a preexisting file."
                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round">
@@ -253,7 +253,7 @@
       </div>
       <!-- Primary Sidebar Bottom Logo -->
       <div class="sidebar-bottom-brand">
-        <img src="/assets/VisualCHG%20Logo-CJZCqjWH.png" alt="VisualCHG Logo" class="sidebar-logo" />
+        <img src="/media/VisualCHG Logo.png" alt="VisualCHG Logo" class="sidebar-logo" />
         <div class="sidebar-links">
           <a href="https://github.com/SEARCHlaboratory/visualchg" target="_blank" title="GitHub Repository">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -281,7 +281,7 @@
           </a>
           <a href="https://www.searchlaboratory.org" target="_blank" title="Lab Home Page">
             <div
-              style="width: 18px; height: 18px; background-color: currentColor; -webkit-mask: url('/assets/SEARCH%20Lab%20Icon-DWUlPxyg.png') no-repeat center / contain; mask: url('/assets/SEARCH%20Lab%20Icon-DWUlPxyg.png') no-repeat center / contain;">
+              style="width: 18px; height: 18px; background-color: currentColor; -webkit-mask: url('/media/icons/SEARCH%20Lab%20Icon.png') no-repeat center / contain; mask: url('/media/icons/SEARCH%20Lab%20Icon.png') no-repeat center / contain;">
             </div>
           </a>
         </div>
@@ -292,6 +292,23 @@
 
     <!-- Main View Area -->
     <main id="main-view">
+      <div id="relations-pane" class="relations-pane">
+        <div class="relations-pane-header">
+          <h3>Current Relations</h3>
+          <svg class="info-icon"
+            data-info="These are all the relations currently being used in the hypergraph, as well as those available through the standard relations module of ConstraintHg."
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+        <div class="input-group" style="padding: 0 10px; margin-bottom: 10px;">
+          <input type="text" id="relation-search" placeholder="Search..." />
+        </div>
+        <ul id="relation-list" class="relation-list"></ul>
+      </div>
       <!-- Cytoscape Container -->
       <div id="cy-container"></div>
 
@@ -299,14 +316,20 @@
       <div id="layout-controls-container" class="floating-controls-container">
         <div id="layout-controls" class="hidden">
           <div style="display: flex; justify-content: flex-end; align-items: center; width: 100%; margin-bottom: 8px;">
-            <label for="layout-zoom-slider" style="margin-right: 8px; font-size: 0.85rem; color: var(--text-color);">Zoom</label>
-            <input type="range" id="layout-zoom-slider" min="0.1" max="5.0" step="0.1" value="1.0" style="width: 100px;">
-            <span id="layout-zoom-val" style="margin-left: 8px; font-size: 0.85rem; color: var(--text-color); width: 20px; text-align: right;">1.0</span>
+            <label for="layout-zoom-slider"
+              style="margin-right: 8px; font-size: 0.85rem; color: var(--text-color);">Zoom</label>
+            <input type="range" id="layout-zoom-slider" min="0.1" max="5.0" step="0.1" value="1.0"
+              style="width: 100px;">
+            <span id="layout-zoom-val"
+              style="margin-left: 8px; font-size: 0.85rem; color: var(--text-color); width: 20px; text-align: right;">1.0</span>
           </div>
           <div style="display: flex; justify-content: flex-end; align-items: center; width: 100%; margin-bottom: 8px;">
-            <label for="layout-spacing-slider" style="margin-right: 8px; font-size: 0.85rem; color: var(--text-color);">Spacing</label>
-            <input type="range" id="layout-spacing-slider" min="0.1" max="5.0" step="0.1" value="1.0" style="width: 100px;">
-            <span id="layout-spacing-val" style="margin-left: 8px; font-size: 0.85rem; color: var(--text-color); width: 20px; text-align: right;">1.0</span>
+            <label for="layout-spacing-slider"
+              style="margin-right: 8px; font-size: 0.85rem; color: var(--text-color);">Spacing</label>
+            <input type="range" id="layout-spacing-slider" min="0.1" max="5.0" step="0.1" value="1.0"
+              style="width: 100px;">
+            <span id="layout-spacing-val"
+              style="margin-left: 8px; font-size: 0.85rem; color: var(--text-color); width: 20px; text-align: right;">1.0</span>
           </div>
           <div style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;">
             <button class="layout-btn" data-layout="grid">Grid</button>
@@ -318,7 +341,8 @@
           </div>
         </div>
         <div class="view-actions-row" style="display: flex; gap: 8px; justify-content: flex-end;">
-          <button id="btn-clear-path" class="btn" style="background-color: #f59e0b; color: white; display: none; margin-bottom: 0; width: auto;">Clear</button>
+          <button id="btn-clear-path" class="btn"
+            style="background-color: #f59e0b; color: white; display: none; margin-bottom: 0; width: auto;">Clear</button>
           <button id="btn-toggle-view" class="btn primary-action" style="margin-bottom:0; width: auto;">View</button>
         </div>
       </div>

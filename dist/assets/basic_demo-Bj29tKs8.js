@@ -1,4 +1,4 @@
-{
+const n=`{
   "hypergraph": {
     "name": "Basic Demo",
     "no_weights": false,
@@ -31,8 +31,8 @@
     ],
     "edges": [
       {
-        "label": "sum1",
-        "rel": "def sum(a, b):\n    return a + b\n",
+        "label": "edge1",
+        "rel": "def sum(a, b):\\n    return a + b\\n",
         "source_nodes": {
           "a": "A",
           "b": "B"
@@ -41,8 +41,8 @@
         "weight": 100
       },
       {
-        "label": "negate1",
-        "rel": "def negate(a):\n    return -a\n",
+        "label": "edge2",
+        "rel": "def negate(a):\\n    return -a\\n",
         "source_nodes": {
           "a": "A"
         },
@@ -50,8 +50,8 @@
         "weight": 1
       },
       {
-        "label": "negate2",
-        "rel": "def negate(a):\n    return -a\n",
+        "label": "edge3",
+        "rel": "def negate(a):\\n    return -a\\n",
         "source_nodes": {
           "a": "B"
         },
@@ -59,8 +59,8 @@
         "weight": 26
       },
       {
-        "label": "sum2",
-        "rel": "def sum(a, b):\n    return a + b\n",
+        "label": "edge4",
+        "rel": "def sum(a, b):\\n    return a + b\\n",
         "source_nodes": {
           "a": "D",
           "b": "E"
@@ -69,8 +69,8 @@
         "weight": 1
       },
       {
-        "label": "negate3",
-        "rel": "def negate(a):\n    return -a\n",
+        "label": "edge5",
+        "rel": "def negate(a):\\n    return -a\\n",
         "source_nodes": {
           "a": "F"
         },
@@ -96,4 +96,4 @@
     },
     "blank_frame": {}
   }
-}
+}`;export{n as default};
