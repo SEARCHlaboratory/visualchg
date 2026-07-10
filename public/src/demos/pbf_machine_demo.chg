@@ -909,35 +909,122 @@
   },
   "frames": {
     "default": {
-      "bed_height": [300.],
-      "bed_is_leveled": [True],
-      "bin_width": [200.],
-      "blade_position": [590.],
-      "blade_home_position": [590.],
-      "blade_end_position": [10.],
-      "blade_height": [50.],
-      "blade_max_velocity": [350.],
-      "blade_is_leveling": [False],
-      "blade_is_returning": [False],
-      "blade_is_clearing": [False],
-      "chamber_width": [610],
-      "chamber_height": [410],
-      "height_tol": [0.01],
-      "hopper_x_position": [400],
-      "hopper_initial_y_position": [-140],
-      "hopper_raising_distance": [1.5],
-      "hopper_width": [200],
-      "laser_is_on": [True],
-      "layer_scan_times": [2.2055757073762825, 2.4300408995316314, 2.8437084684191456, 2.423730981955099, 2.0185889551716167, 2.078105709538992, 2.4794040852432406, 2.619599901860837, 2.705956104193786, 2.6115385907359983, 2.5905443178526832, 2.8593386701479164, 2.2515393485679227, 2.888657489016468, 2.3659577333008586, 2.0720056752856237, 2.886340826462735, 2.2018471322057236, 2.9450455274933898, 2.409839698892655, 2.2068965092649, 2.575540200391147, 2.137795597084847, 2.6044070195668336, 2.779986347974037, 2.9561982166286187, 2.620588058265457, 2.717219527328757, 2.771715360282042, 2.530224021442669],
-      "layers_completed": [0],
-      "material_density": [0.0027],
-      "scan_start_time": [0.0],
-      "plate_x_position": [200],
-      "plate_width": [200],
-      "plate_lowering_distance": [-1],
-      "prev_layer_fused": [True],
-      "timestep": [0.5],
-      "time": [0.0]
+      "bed_height": [
+        300.0
+      ],
+      "bed_is_leveled": [
+        true
+      ],
+      "bin_width": [
+        200.0
+      ],
+      "blade_position": [
+        590.0
+      ],
+      "blade_home_position": [
+        590.0
+      ],
+      "blade_end_position": [
+        10.0
+      ],
+      "blade_height": [
+        50.0
+      ],
+      "blade_max_velocity": [
+        350.0
+      ],
+      "blade_is_leveling": [
+        false
+      ],
+      "blade_is_returning": [
+        false
+      ],
+      "blade_is_clearing": [
+        false
+      ],
+      "chamber_width": [
+        610
+      ],
+      "chamber_height": [
+        410
+      ],
+      "height_tol": [
+        0.01
+      ],
+      "hopper_x_position": [
+        400
+      ],
+      "hopper_initial_y_position": [
+        -140
+      ],
+      "hopper_raising_distance": [
+        1.5
+      ],
+      "hopper_width": [
+        200
+      ],
+      "laser_is_on": [
+        true
+      ],
+      "layer_scan_times": [
+        2.2055757073762825,
+        2.4300408995316314,
+        2.8437084684191456,
+        2.423730981955099,
+        2.0185889551716167,
+        2.078105709538992,
+        2.4794040852432406,
+        2.619599901860837,
+        2.705956104193786,
+        2.6115385907359983,
+        2.5905443178526832,
+        2.8593386701479164,
+        2.2515393485679227,
+        2.888657489016468,
+        2.3659577333008586,
+        2.0720056752856237,
+        2.886340826462735,
+        2.2018471322057236,
+        2.9450455274933898,
+        2.409839698892655,
+        2.2068965092649,
+        2.575540200391147,
+        2.137795597084847,
+        2.6044070195668336,
+        2.779986347974037,
+        2.9561982166286187,
+        2.620588058265457,
+        2.717219527328757,
+        2.771715360282042,
+        2.530224021442669
+      ],
+      "layers_completed": [
+        0
+      ],
+      "material_density": [
+        0.0027
+      ],
+      "scan_start_time": [
+        0.0
+      ],
+      "plate_x_position": [
+        200
+      ],
+      "plate_width": [
+        200
+      ],
+      "plate_lowering_distance": [
+        -1
+      ],
+      "prev_layer_fused": [
+        true
+      ],
+      "timestep": [
+        0.5
+      ],
+      "time": [
+        0.0
+      ]
     },
     "full_run": {
       "blade_position": [
