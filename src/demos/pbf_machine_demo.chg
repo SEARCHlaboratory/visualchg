@@ -1,0 +1,1059 @@
+{
+  "hypergraph": {
+    "name": "Powder Bed Fusion Machine Demo",
+    "no_weights": false,
+    "memory_mode": false,
+    "nodes": [
+      {
+        "label": "build_plate_x_position",
+        "is_constant": false,
+        "description": "distance from left of chamber for build plate",
+        "units": "mm"
+      },
+      {
+        "label": "build_plate_y_position",
+        "is_constant": false,
+        "description": "distance from bottom of chamber for build plate",
+        "units": "mm"
+      },
+      {
+        "label": "build_plate_width",
+        "is_constant": false,
+        "description": "width of build plate",
+        "units": "mm"
+      },
+      {
+        "label": "timestep",
+        "is_constant": false,
+        "value": 0.5,
+        "description": "smallest time unit considered",
+        "units": "s"
+      },
+      {
+        "label": "leveling_time",
+        "is_constant": false,
+        "description": "Nominal duration of leveling process",
+        "units": "s"
+      },
+      {
+        "label": "blade_name",
+        "is_constant": false,
+        "description": "name for blade"
+      },
+      {
+        "label": "blade_type",
+        "is_constant": false,
+        "description": "type of blade"
+      },
+      {
+        "label": "blade_angle",
+        "is_constant": false,
+        "description": "angle for blade",
+        "units": "degrees"
+      },
+      {
+        "label": "blade_height",
+        "is_constant": false,
+        "value": 50.0,
+        "description": "height of blade",
+        "units": "mm"
+      },
+      {
+        "label": "blade_home_position",
+        "is_constant": false,
+        "value": 590.0,
+        "description": "home position for blade from left of chamber",
+        "units": "mm"
+      },
+      {
+        "label": "blade_end_position",
+        "is_constant": false,
+        "value": 10.0,
+        "description": "maximum position for blade from left of chamber",
+        "units": "mm"
+      },
+      {
+        "label": "blade_position",
+        "is_constant": false,
+        "value": 590.0,
+        "description": "distance of blade from left of chamber",
+        "units": "mm"
+      },
+      {
+        "label": "blade_relative_position",
+        "is_constant": false,
+        "description": "proportion of blade location from home (0) to end (1) position"
+      },
+      {
+        "label": "blade_velocity",
+        "is_constant": false,
+        "description": "current velocity of blade, with + moving away from start position",
+        "units": "mm/s"
+      },
+      {
+        "label": "blade_max_velocity",
+        "is_constant": false,
+        "value": 350.0,
+        "description": "goal velocity of blade, with + moving away from start position",
+        "units": "mm/s"
+      },
+      {
+        "label": "blade_is_leveling",
+        "is_constant": false,
+        "value": false,
+        "description": "true if the blade is currently moving",
+        "units": "Boolean"
+      },
+      {
+        "label": "blade_is_clearing",
+        "is_constant": false,
+        "value": false,
+        "description": "true if blade is actively clearing bed",
+        "units": "Boolean"
+      },
+      {
+        "label": "bed_is_level",
+        "is_constant": false,
+        "description": "true if bed is adequately cleared",
+        "units": "Boolean"
+      },
+      {
+        "label": "blade_is_returning",
+        "is_constant": false,
+        "value": false,
+        "description": "true if blade returning to its home position",
+        "units": "Boolean"
+      },
+      {
+        "label": "blade_returned",
+        "is_constant": false,
+        "description": "true if blade is in its home position",
+        "units": "Boolean"
+      },
+      {
+        "label": "blade_at_end",
+        "is_constant": false,
+        "description": "true if blade is in its end position",
+        "units": "Boolean"
+      },
+      {
+        "label": "hopper_x_position",
+        "is_constant": false,
+        "value": 400,
+        "description": "distance from left of chamber for hopper",
+        "units": "mm"
+      },
+      {
+        "label": "hopper_y_position",
+        "is_constant": false,
+        "description": "distance from bed surface to hopper floor (usually negative)",
+        "units": "mm"
+      },
+      {
+        "label": "hopper_width",
+        "is_constant": false,
+        "value": 200,
+        "description": "width of hopper",
+        "units": "mm"
+      },
+      {
+        "label": "hopper_depth",
+        "is_constant": false,
+        "description": "depth of hopper",
+        "units": "mm"
+      },
+      {
+        "label": "hopper_volume",
+        "is_constant": false,
+        "description": "volume of hopper",
+        "units": "mm^3"
+      },
+      {
+        "label": "current_material",
+        "is_constant": false,
+        "description": "average density of material"
+      },
+      {
+        "label": "material_mass",
+        "is_constant": false,
+        "description": "mass of material in hopper",
+        "units": "g"
+      },
+      {
+        "label": "laser_is_on",
+        "is_constant": false,
+        "value": true,
+        "description": "true if laser is on",
+        "units": "Boolean"
+      },
+      {
+        "label": "chamber_temperature",
+        "is_constant": false,
+        "description": "average temperature of chamber",
+        "units": "C"
+      },
+      {
+        "label": "layer_thickness",
+        "is_constant": false,
+        "description": "height of each layer of the part",
+        "units": "mm"
+      },
+      {
+        "label": "luminosity",
+        "is_constant": false,
+        "description": "brightness of build chamber",
+        "units": "lumens"
+      },
+      {
+        "label": "chamber_width",
+        "is_constant": false,
+        "value": 610,
+        "description": "width of chamber",
+        "units": "mm"
+      },
+      {
+        "label": "chamber_length",
+        "is_constant": false,
+        "description": "length of chamber",
+        "units": "mm"
+      },
+      {
+        "label": "chamber_height",
+        "is_constant": false,
+        "value": 410,
+        "description": "height of chamber",
+        "units": "mm"
+      },
+      {
+        "label": "bed_height",
+        "is_constant": false,
+        "value": 300.0,
+        "description": "distance of bed surface from floor",
+        "units": "mm"
+      },
+      {
+        "label": "bin_width",
+        "is_constant": false,
+        "value": 200.0,
+        "description": "width of disposal bin",
+        "units": "mm"
+      },
+      {
+        "label": "time",
+        "is_constant": false,
+        "value": 0.0,
+        "description": "current time of process",
+        "units": "s"
+      },
+      {
+        "label": "part_name",
+        "is_constant": false,
+        "description": "name of part"
+      },
+      {
+        "label": "part_height",
+        "is_constant": false,
+        "description": "height of part"
+      },
+      {
+        "label": "build_time",
+        "is_constant": false,
+        "description": "time to build part",
+        "units": "s"
+      },
+      {
+        "label": "build_progress",
+        "is_constant": false,
+        "description": "proportion of build completed",
+        "units": "%"
+      },
+      {
+        "label": "layer_build_times",
+        "is_constant": false,
+        "description": "list of times to build each layer",
+        "units": "List[s]"
+      },
+      {
+        "label": "number_of_layers",
+        "is_constant": false,
+        "description": "number of layers in part"
+      },
+      {
+        "label": "bed_is_leveled",
+        "is_constant": false,
+        "value": true,
+        "description": "true if bed is ready for fusion to begin"
+      },
+      {
+        "label": "layers_completed",
+        "is_constant": false,
+        "value": 0,
+        "description": "number of layers completed"
+      },
+      {
+        "label": "layer_scan_time",
+        "is_constant": false,
+        "description": "time required to fuse current layer",
+        "units": "s"
+      },
+      {
+        "label": "scan_start_time",
+        "is_constant": false,
+        "value": 0.0,
+        "description": "time current layer was first prepared for fusing",
+        "units": "s"
+      },
+      {
+        "label": "scan_end_time",
+        "is_constant": false,
+        "description": "time fusing should end for current layer",
+        "units": "s"
+      },
+      {
+        "label": "layer_fused",
+        "is_constant": false,
+        "description": "true if current layer has been completely fused",
+        "units": "Boolean"
+      },
+      {
+        "label": "layer_just_fused",
+        "is_constant": false,
+        "description": "true if current layer was been fused on the current index",
+        "units": "Boolean"
+      },
+      {
+        "label": "height_tol",
+        "is_constant": false,
+        "value": 0.01,
+        "description": "tolerance for machine adjustments in height",
+        "units": "mm"
+      },
+      {
+        "label": "plate_y_position",
+        "is_constant": false,
+        "description": "distance from bottom of chamber to build plate",
+        "units": "mm"
+      },
+      {
+        "label": "plate_initial_y_position",
+        "is_constant": false,
+        "description": "initial distance from bottom of chamber to build plate",
+        "units": "mm"
+      },
+      {
+        "label": "plate_lowering_distance",
+        "is_constant": false,
+        "value": -1,
+        "description": "distance plate lowers after fusion process",
+        "units": "mm"
+      },
+      {
+        "label": "plate_at_fusion_level",
+        "is_constant": false,
+        "description": "true if plate is high enough for fusion/leveling process",
+        "units": "Boolean"
+      },
+      {
+        "label": "hopper_initial_y_position",
+        "is_constant": false,
+        "value": -140,
+        "description": "initial distance from hopper floor to build plate",
+        "units": "mm"
+      },
+      {
+        "label": "hopper_raising_distance",
+        "is_constant": false,
+        "value": 1.5,
+        "description": "distance plate raises after fusion process",
+        "units": "mm"
+      },
+      {
+        "label": "hopper_is_raised",
+        "is_constant": false,
+        "description": "true if hopper is one level above current layer",
+        "units": "Boolean"
+      },
+      {
+        "label": "layer_scan_times",
+        "is_constant": false,
+        "value": [
+          2.237964627091891,
+          2.5442292252959517,
+          2.3699551665480794,
+          2.6039200385961943,
+          2.625720304108054,
+          2.065528859239813,
+          2.013167991554874,
+          2.83746908209646,
+          2.2593540143280078,
+          2.2343309610466964,
+          2.995644835510463,
+          2.470263507522448,
+          2.836461451274389,
+          2.4763532086993347,
+          2.639068140544162,
+          2.150616424023524,
+          2.6348606582851883,
+          2.868045307143297,
+          2.523181210383301,
+          2.7412518562014903,
+          2.6714114753695926,
+          2.0640314382269973,
+          2.7582302462868173,
+          2.5910995829313177,
+          2.3012676595157124,
+          2.03101175146975,
+          2.8655272369789455,
+          2.472749088665467,
+          2.718823924065803,
+          2.878812800255482
+        ],
+        "description": "list of times to build each layer",
+        "units": "List[s]"
+      },
+      {
+        "label": "material_density",
+        "is_constant": true,
+        "value": 0.0027
+      },
+      {
+        "label": "plate_x_position",
+        "is_constant": true,
+        "value": 200
+      },
+      {
+        "label": "plate_width",
+        "is_constant": true,
+        "value": 200
+      },
+      {
+        "label": "prev_layer_fused",
+        "is_constant": true,
+        "value": true
+      }
+    ],
+    "edges": [
+      {
+        "label": "(blad,blad,blad)->blade_ve",
+        "rel": "def Rnegate_speed(speed, **kw):\n    \"Negates the speed argument.\"\n    return -speed\n",
+        "source_nodes": {
+          "is_clearing": "blade_is_clearing",
+          "is_returning": "blade_is_returning",
+          "speed": "blade_max_velocity"
+        },
+        "target": "blade_velocity",
+        "weight": 1.0,
+        "via": "def Rcheck_blade_is_clearing(is_clearing, is_returning, **kw):\n    \"Checks if the blade is clearing.\"\n    return is_clearing and not is_returning\n",
+        "index_via": "def Ridx_blade_moving(is_clearing, is_returning, **kw):\n    \"Checks if the blade is clearing for indexing.\"\n    return R.Rsame(is_clearing, is_returning)\n",
+        "disposable": [
+          "is_clearing",
+          "is_returning"
+        ]
+      },
+      {
+        "label": "(blad,blad,blad)->blade_ve#1",
+        "rel": "def Requal(*args, **kwargs):\n    args, kwargs = get_keyword_arguments(args, kwargs, identifier)\n    return kwargs[identifier]\n",
+        "source_nodes": {
+          "is_clearing": "blade_is_clearing",
+          "is_returning": "blade_is_returning",
+          "speed": "blade_max_velocity"
+        },
+        "target": "blade_velocity",
+        "weight": 1.0,
+        "via": "def Rcheck_blade_is_returning(is_clearing, is_returning, **kw):\n    \"Checks if the blade is returning.\"\n    return not is_clearing and is_returning\n",
+        "index_via": "def Ridx_blade_moving(is_clearing, is_returning, **kw):\n    \"Checks if the blade is clearing for indexing.\"\n    return R.Rsame(is_clearing, is_returning)\n",
+        "disposable": [
+          "is_clearing",
+          "is_returning"
+        ]
+      },
+      {
+        "label": "check_blade_stopped",
+        "rel": "def Rget_zero(*args, **kw):\n    \"Returns zero.\"\n    return 0.\n",
+        "source_nodes": {
+          "is_clearing": "blade_is_clearing",
+          "is_returning": "blade_is_returning"
+        },
+        "target": "blade_velocity",
+        "weight": 1.0,
+        "via": "def Rcheck_blade_stopped(is_clearing, is_returning, **kw):\n    \"Checks if the blade is stopped.\"\n    return not is_clearing and not is_returning\n",
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "disposable": [
+          "is_clearing",
+          "is_returning"
+        ]
+      },
+      {
+        "label": "(blad,time,blad)->blade_po",
+        "rel": "def Reulerian_integration(rate: float, step: float, initial: float, \n                          *ar, **kw)-> float:\n    \"\"\"Performs a first-order Eulerian integration.\"\"\"\n    out = initial + rate * step\n    return out\n",
+        "source_nodes": {
+          "rate": "blade_velocity",
+          "step": "timestep",
+          "initial": "blade_position"
+        },
+        "target": "blade_position",
+        "weight": 1.0,
+        "index_via": "def Ridx_offset_rate(rate, initial, **kw):\n    \"Checks if the rate is equal to the initial value plus one.\"\n    return rate == initial + 1\n",
+        "disposable": [
+          "rate",
+          "initial"
+        ]
+      },
+      {
+        "label": "(blad)->blade_re",
+        "rel": "def Rcalc_blade_returned(rel_position: float, *ar, **kw)-> bool:\n    \"\"\"Returns true if the blade is in its home position.\"\"\"\n    returned = rel_position <= 0.\n    return returned\n",
+        "source_nodes": {
+          "rel_position": "blade_relative_position"
+        },
+        "target": "blade_returned",
+        "weight": 1.0
+      },
+      {
+        "label": "(blad)->blade_at",
+        "rel": "def Rcyclecounter(*args, **kwargs):\n    args, kwargs = get_keyword_arguments(args, kwargs, identifier)\n    return kwargs[identifier] >= val\n",
+        "source_nodes": {
+          "rel_pos": "blade_relative_position"
+        },
+        "target": "blade_at_end",
+        "weight": 1.0
+      },
+      {
+        "label": "(blad,blad,blad)->blade_re",
+        "rel": "def Rcalc_blade_rel_position(home: float, end: float, position: float,\n                             *ar, **kw)-> bool:\n    \"\"\"Returns proportion of distance blade is from home and end positions.\"\"\"\n    prop = (position - home) / (end - home)\n    return prop\n",
+        "source_nodes": {
+          "home": "blade_home_position",
+          "end": "blade_end_position",
+          "position": "blade_position"
+        },
+        "target": "blade_relative_position",
+        "weight": 1.0
+      },
+      {
+        "label": "(blad,blad,blad)->leveling",
+        "rel": "def Rcalc_leveling_time(home: float, end: float, speed: float,\n                        *ar, **kw)-> float:\n    \"\"\"Calculates nominal time for leveling process.\"\"\"\n    distance = abs(home - end) * 2\n    min_time = distance / speed\n    adj_time = min_time * 1.2\n    return adj_time\n",
+        "source_nodes": {
+          "home": "blade_home_position",
+          "end": "blade_end_position",
+          "speed": "blade_max_velocity"
+        },
+        "target": "leveling_time",
+        "weight": 1.0
+      },
+      {
+        "label": "check_blade_is_clearing",
+        "rel": "def Rcalc_blade_clearing_status(leveling: bool, returning: bool, rel_pos: float,\n                                prev_status: bool):\n    \"\"\"Calculates if the blade is clearing.\"\"\"\n    if any([not leveling, returning]):\n        return False\n    if rel_pos >= 1.:\n        return False\n    if rel_pos <= 0.:\n        return True\n    return prev_status\n",
+        "source_nodes": {
+          "leveling": "blade_is_leveling",
+          "returning": "blade_is_returning",
+          "rel_pos": "blade_relative_position",
+          "prev_status": "blade_is_clearing"
+        },
+        "target": "blade_is_clearing",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "index_offset": 1,
+        "disposable": [
+          "leveling",
+          "returning",
+          "prev_status",
+          "rel_pos"
+        ]
+      },
+      {
+        "label": "check_blade_is_returning",
+        "rel": "def Rcalc_blade_returning_status(clearing: bool, rel_pos: float,\n                                prev_status: bool):\n    \"\"\"Calculates if the blade is returning.\"\"\"\n    if clearing:\n        return False\n    if rel_pos <= 0.:\n        return False\n    if rel_pos >= 1.:\n        return True\n    return prev_status\n",
+        "source_nodes": {
+          "clearing": "blade_is_clearing",
+          "rel_pos": "blade_relative_position",
+          "prev_status": "blade_is_returning"
+        },
+        "target": "blade_is_returning",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "index_offset": 1,
+        "disposable": [
+          "clearing",
+          "prev_status",
+          "rel_pos"
+        ]
+      },
+      {
+        "label": "(hopp)->hopper_d",
+        "rel": "def Rfirst(*args, **kwargs):\n    \"\"\"Returns the first argument.\"\"\"\n    args, kwargs = get_keyword_arguments(args, kwargs, 's1')\n    return kwargs['s1']\n",
+        "source_nodes": {
+          "s1": "hopper_width"
+        },
+        "target": "hopper_depth",
+        "weight": 1.0
+      },
+      {
+        "label": "(hopp,hopp,hopp)->hopper_v",
+        "rel": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments together.\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out\n",
+        "source_nodes": {
+          "s2": "hopper_width",
+          "s3": "hopper_depth",
+          "s1": "hopper_y_position"
+        },
+        "target": "hopper_volume",
+        "weight": 1.0
+      },
+      {
+        "label": "(curr,hopp)->material",
+        "rel": "def Rmultiply(*args, **kwargs):\n    \"\"\"Multiplies all arguments together.\"\"\"\n    args = extend(args, kwargs)\n    out = 1\n    for s in args:\n        out *= s\n    return out\n",
+        "source_nodes": {
+          "density": "current_material",
+          "volume": "hopper_volume"
+        },
+        "target": "material_mass",
+        "weight": 1.0
+      },
+      {
+        "label": "(time,buil,bed_)->build_pr",
+        "rel": "def Rget_percentage(time, total, **kw):\n    \"Returns the percentage of time to total.\"\n    return time / total * 100\n",
+        "source_nodes": {
+          "time": "time",
+          "total": "build_time",
+          "unused": "bed_is_leveled"
+        },
+        "target": "build_progress",
+        "weight": 1.0,
+        "index_via": "def Rtime_is_unused(time, unused, **kw):\n    \"Checks if time is equal to the unused value.\"\n    return time == unused\n",
+        "disposable": [
+          "time",
+          "unused"
+        ]
+      },
+      {
+        "label": "(laye)->number_o",
+        "rel": "def Rget_first_count(*args, **kwargs):\n    \"Returns the count of arguments.\"\n    args = R.extend(args, kwargs)\n    return len(args[0])\n",
+        "source_nodes": {
+          "times": "layer_build_times"
+        },
+        "target": "number_of_layers",
+        "weight": 1.0
+      },
+      {
+        "label": "(laye)->build_ti",
+        "rel": "def Rsum_list(times, **kw):\n    \"Returns the sum of a list of times.\"\n    return sum(times)\n",
+        "source_nodes": {
+          "times": "layer_build_times"
+        },
+        "target": "build_time",
+        "weight": 1.0
+      },
+      {
+        "label": "increment_time",
+        "rel": "def Rsum(*args, **kwargs):\n    \"\"\"Sums all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return sum(args)\n",
+        "source_nodes": {
+          "time": "time",
+          "step": "timestep"
+        },
+        "target": "time",
+        "weight": 1.0,
+        "index_offset": 1,
+        "disposable": [
+          "time"
+        ]
+      },
+      {
+        "label": "get_layer_scan_time",
+        "rel": "def Rget_time_from_index(index, times, **kw):\n    \"Returns the time from the index and step size.\"\n    return times[index]\n",
+        "source_nodes": {
+          "index": "layers_completed",
+          "times": "layer_scan_times"
+        },
+        "target": "layer_scan_time",
+        "weight": 1.0,
+        "via": "def Rcheck_index_in_bounds(index, times, **kw):\n    \"Checks if the index is within the bounds of the times list.\"\n    return index < len(times)\n",
+        "disposable": "index"
+      },
+      {
+        "label": "(laye,leve)->build_ti",
+        "rel": "def Rcalc_build_time(scan_times: list, leveling_time: float,\n                     *ar, **kw)-> float:\n    \"\"\"Calculates the total time to build the part.\"\"\"\n    build_time = sum(scan_times) + leveling_time * len(scan_times)\n    return build_time\n",
+        "source_nodes": {
+          "scan_times": "layer_scan_times",
+          "leveling_time": "leveling_time"
+        },
+        "target": "build_time",
+        "weight": 1.0
+      },
+      {
+        "label": "(bed_,buil,time,scan)->scan_sta",
+        "rel": "def Rcalc_fusing_start_time(leveled: bool, progress: float, time: float,\n                            prev_start: float, *ar, **kw)-> bool:\n    \"\"\"Returns the time that fusion began for the current layer.\"\"\"\n    if all([leveled, progress < 99.999]):\n        return time\n    return prev_start\n",
+        "source_nodes": {
+          "leveled": "bed_is_leveled",
+          "progress": "build_progress",
+          "time": "time",
+          "prev_start": "scan_start_time"
+        },
+        "target": "scan_start_time",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "index_offset": 1,
+        "disposable": [
+          "leveled",
+          "progress",
+          "time",
+          "prev_start"
+        ]
+      },
+      {
+        "label": "(laye,time)->scan_end",
+        "rel": "def Rsum(*args, **kwargs):\n    \"\"\"Sums all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return sum(args)\n",
+        "source_nodes": {
+          "scan_time": "layer_scan_time",
+          "time": "time"
+        },
+        "target": "scan_end_time",
+        "weight": 1.0,
+        "index_via": "def Ridx_check_at_start(time, scan_time, **kw):\n    \"Checks if the time and scan time are at their first index.\"\n    return time == 1 and scan_time == 1\n",
+        "disposable": [
+          "scan_time",
+          "time"
+        ]
+      },
+      {
+        "label": "(bed_,laye,scan,scan)->scan_end",
+        "rel": "def Rcalc_fusing_end_time(leveled: bool, scan_time: float, start: float,\n                          prev: float, *ar, **kw)-> bool:\n    \"\"\"Returns the time that fusion should end for the current layer.\"\"\"\n    if not leveled:\n        return prev\n    return scan_time + start\n",
+        "source_nodes": {
+          "leveled": "bed_is_leveled",
+          "scan_time": "layer_scan_time",
+          "start": "scan_start_time",
+          "prev": "scan_end_time"
+        },
+        "target": "scan_end_time",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "index_offset": 1,
+        "disposable": [
+          "leveled",
+          "scan_time",
+          "start",
+          "prev"
+        ]
+      },
+      {
+        "label": "layer_finished_scanning",
+        "rel": "def Rlayer_finished_scanning(scan_end_time: float, time: float, *ar, **kw)-> bool:\n    \"\"\"Returns true if the layer is finished scanning.\"\"\"\n    done = time >= scan_end_time\n    return done\n",
+        "source_nodes": {
+          "scan_end_time": "scan_end_time",
+          "time": "time"
+        },
+        "target": "layer_fused",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "disposable": [
+          "scan_end_time",
+          "time"
+        ]
+      },
+      {
+        "label": "(time,time,scan)->layer_ju",
+        "rel": "def Rcheck_event_just_happened(step: float, time: float, keyframe: float,\n                               *ar, **kw)-> bool:\n    \"\"\"Returns true if event at the time `keyframe` happened in the previous \n    time step. Not assumes that time increments linearly by the time step.\"\"\"\n    return time > keyframe and time < step + keyframe\n",
+        "source_nodes": {
+          "step": "timestep",
+          "time": "time",
+          "keyframe": "scan_end_time"
+        },
+        "target": "layer_just_fused",
+        "weight": 1.0,
+        "index_via": "def Ridx_check_keyframe_at_time(time, keyframe, **kw):\n    \"Checks if the time and keyframe are at the same index.\"\n    return time == keyframe\n",
+        "disposable": [
+          "time",
+          "keyframe"
+        ]
+      },
+      {
+        "label": "get_layers_completed",
+        "rel": "def Rget_layers_completed(just_fused: bool, prev_layers: int,*ar, **kw)-> int:\n    \"\"\"Returns the number of layers completed at the current time step.\"\"\"\n    if just_fused:\n        return prev_layers + 1\n    return prev_layers\n",
+        "source_nodes": {
+          "just_fused": "layer_just_fused",
+          "prev_layers": "layers_completed"
+        },
+        "target": "layers_completed",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "index_offset": 1,
+        "disposable": [
+          "just_fused",
+          "prev_layers"
+        ]
+      },
+      {
+        "label": "check_laser_on",
+        "rel": "def Rcheck_laser_on(keyframe: float, time: float, finished: bool, *ar, **kw)->bool:\n    \"\"\"Returns true if the laser is on.\"\"\"\n    laser_on = time >= keyframe and not finished\n    return laser_on\n",
+        "source_nodes": {
+          "keyframe": "scan_start_time",
+          "time": "time",
+          "finished": "layer_fused"
+        },
+        "target": "laser_is_on",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "disposable": [
+          "keyframe",
+          "time",
+          "finished"
+        ]
+      },
+      {
+        "label": "(plat,bed_,laye,plat,heig)->plate_at",
+        "rel": "def Rcheck_plate_at_fusion_level(height: float, initial: float, num_layers: int,\n                            step: float, tol: float, *ar, **kw)-> bool:\n    \"\"\"Returns True if the build plate is at a sufficient height for fusion.\"\"\"\n    built_offset = step * (num_layers + 1)\n    fusion_height = initial + built_offset\n    is_lowered = abs(height - fusion_height) < tol\n    return is_lowered\n",
+        "source_nodes": {
+          "height": "plate_y_position",
+          "initial": "bed_height",
+          "num_layers": "layers_completed",
+          "step": "plate_lowering_distance",
+          "tol": "height_tol"
+        },
+        "target": "plate_at_fusion_level",
+        "weight": 1.0,
+        "index_via": "def Ridx_check_height_at_level(height, num_layers, **kw):\n    \"Checks if the height and number of layers are at the same index.\"\n    return height == num_layers\n",
+        "disposable": [
+          "height",
+          "num_layers"
+        ]
+      },
+      {
+        "label": "(hopp,hopp,laye,hopp,heig)->hopper_i",
+        "rel": "def Rcheck_hopper_at_leveling_level(height: float, initial: float, num_layers: int,\n                            step: float, tol: float, *ar, **kw)-> bool:\n    \"\"\"Returns True if the hopper is at a sufficient height for leveling.\"\"\"\n    built_offset = step * (num_layers)\n    dispensing_height = initial + built_offset\n    is_raised = abs(height - dispensing_height) < tol\n    return is_raised\n",
+        "source_nodes": {
+          "height": "hopper_y_position",
+          "initial": "hopper_initial_y_position",
+          "num_layers": "layers_completed",
+          "step": "hopper_raising_distance",
+          "tol": "height_tol"
+        },
+        "target": "hopper_is_raised",
+        "weight": 1.0,
+        "index_via": "def Ridx_check_height_at_level(height, num_layers, **kw):\n    \"Checks if the height and number of layers are at the same index.\"\n    return height == num_layers\n",
+        "disposable": [
+          "height",
+          "num_layers"
+        ]
+      },
+      {
+        "label": "(bed_,plat)->plate_in",
+        "rel": "def Rsum(*args, **kwargs):\n    \"\"\"Sums all arguments.\"\"\"\n    args = extend(args, kwargs)\n    return sum(args)\n",
+        "source_nodes": {
+          "start": "bed_height",
+          "step": "plate_lowering_distance"
+        },
+        "target": "plate_initial_y_position",
+        "weight": 1.0
+      },
+      {
+        "label": "(plat,laye,plat)->plate_y_",
+        "rel": "def Rcalc_vertical_position(step: float, count: int, start: float,\n                            *ar, **kw)-> float:\n    \"\"\"Returns current position of a vertical displacing surface.\"\"\"\n    position = start + step * count\n    return position\n",
+        "source_nodes": {
+          "step": "plate_lowering_distance",
+          "count": "layers_completed",
+          "start": "plate_initial_y_position"
+        },
+        "target": "plate_y_position",
+        "weight": 1.0,
+        "disposable": "layers_completed"
+      },
+      {
+        "label": "(hopp,laye,hopp)->hopper_y",
+        "rel": "def Rcalc_vertical_position(step: float, count: int, start: float,\n                            *ar, **kw)-> float:\n    \"\"\"Returns current position of a vertical displacing surface.\"\"\"\n    position = start + step * count\n    return position\n",
+        "source_nodes": {
+          "step": "hopper_raising_distance",
+          "count": "layers_completed",
+          "start": "hopper_initial_y_position"
+        },
+        "target": "hopper_y_position",
+        "weight": 1.0,
+        "disposable": "layers_completed"
+      },
+      {
+        "label": "check_blade_is_leveling",
+        "rel": "def Rcheck_blade_is_leveling(fused: bool, plate: bool, hopper: bool, bed: bool,\n                             *ar, **kw)-> bool: \n    \"\"\"Returns true if the blade is clearing.\"\"\"\n    leveling = all([plate, hopper, fused, not bed])\n    return leveling\n",
+        "source_nodes": {
+          "fused": "layer_fused",
+          "plate": "plate_at_fusion_level",
+          "hopper": "hopper_is_raised",
+          "bed": "bed_is_leveled"
+        },
+        "target": "blade_is_leveling",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "disposable": [
+          "fused",
+          "plate",
+          "hopper",
+          "bed"
+        ]
+      },
+      {
+        "label": "check_bed_leveled",
+        "rel": "def Rcheck_bed_leveled(prev: bool, firing: bool, returning: bool, rel_pos: float,\n                          *ar, **kw)-> bool:\n    \"\"\"Returns true if the bed has been leveled.\"\"\"\n    if firing:\n        return False\n    elif returning and rel_pos <= 0.1:\n        return True\n    return prev\n",
+        "source_nodes": {
+          "prev": "bed_is_leveled",
+          "firing": "laser_is_on",
+          "returning": "blade_is_returning",
+          "rel_pos": "blade_relative_position"
+        },
+        "target": "bed_is_leveled",
+        "weight": 1.0,
+        "index_via": "def Rsame(*args, **kwargs):\n    \"\"\"Returns true if all arguments are equivalent.\"\"\"\n    args = set(extend(args, kwargs))\n    if len(args) == 0:  # Trivial case\n        return True\n    return len(args) == 1\n",
+        "index_offset": 1,
+        "disposable": [
+          "prev",
+          "firing",
+          "returning",
+          "rel_pos"
+        ]
+      }
+    ]
+  },
+  "frames": {
+    "frame0": {
+      "blade_position": [
+        590.0,
+        590.0,
+        590.0
+      ],
+      "blade_velocity": [
+        0.0,
+        0.0
+      ],
+      "blade_is_clearing": [
+        false,
+        false,
+        false
+      ],
+      "blade_is_leveling": [
+        false,
+        false
+      ],
+      "layer_fused": [
+        false
+      ],
+      "scan_end_time": [
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891
+      ],
+      "bed_is_leveled": [
+        true,
+        false,
+        false
+      ],
+      "layer_scan_time": [
+        2.237964627091891,
+        2.237964627091891,
+        2.237964627091891
+      ],
+      "layers_completed": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "layer_scan_times": [
+        [
+          2.237964627091891,
+          2.5442292252959517,
+          2.3699551665480794,
+          2.6039200385961943,
+          2.625720304108054,
+          2.065528859239813,
+          2.013167991554874,
+          2.83746908209646,
+          2.2593540143280078,
+          2.2343309610466964,
+          2.995644835510463,
+          2.470263507522448,
+          2.836461451274389,
+          2.4763532086993347,
+          2.639068140544162,
+          2.150616424023524,
+          2.6348606582851883,
+          2.868045307143297,
+          2.523181210383301,
+          2.7412518562014903,
+          2.6714114753695926,
+          2.0640314382269973,
+          2.7582302462868173,
+          2.5910995829313177,
+          2.3012676595157124,
+          2.03101175146975,
+          2.8655272369789455,
+          2.472749088665467,
+          2.718823924065803,
+          2.878812800255482
+        ]
+      ],
+      "scan_start_time": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "time": [
+        0.0,
+        0.5,
+        1.0,
+        1.5
+      ],
+      "timestep": [
+        0.5
+      ],
+      "plate_at_fusion_level": [
+        true
+      ],
+      "plate_y_position": [
+        299.0
+      ],
+      "plate_lowering_distance": [
+        -1
+      ],
+      "layer_just_fused": [
+        false,
+        false
+      ],
+      "plate_initial_y_position": [
+        299.0
+      ],
+      "bed_height": [
+        300.0
+      ],
+      "height_tol": [
+        0.01
+      ],
+      "hopper_is_raised": [
+        true
+      ],
+      "hopper_y_position": [
+        -140.0
+      ],
+      "hopper_raising_distance": [
+        1.5
+      ],
+      "hopper_initial_y_position": [
+        -140
+      ],
+      "laser_is_on": [
+        true,
+        true
+      ],
+      "blade_is_returning": [
+        false,
+        false,
+        false
+      ],
+      "blade_relative_position": [
+        -0.0,
+        -0.0
+      ],
+      "blade_home_position": [
+        590.0
+      ],
+      "blade_end_position": [
+        10.0
+      ]
+    }
+  }
+}
